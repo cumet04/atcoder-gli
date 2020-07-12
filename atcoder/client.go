@@ -10,24 +10,39 @@ import (
 	"strings"
 )
 
+type Lang int
+
+const (
+	LangJa Lang = iota
+	LangEn
+)
+
 type Client struct {
-	endpoint  *url.URL
-	client    *http.Client
 	ctx       context.Context
+	client    *http.Client
+	endpoint  *url.URL
+	lang      Lang
 	session   *http.Cookie
 	csrfToken string
 }
 
 // NewClient creates new Client instance with endpoint and cookie(string)
-func NewClient(ctx context.Context, endpoint string, cookie string) Client {
+func NewClient(ctx context.Context, endpoint string, lang Lang, cookie string) Client {
 	url, err := url.Parse(endpoint)
 	if err != nil {
 		panic(err)
 	}
+	client := &http.Client{
+		// Stop tracing redirect
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 	return Client{
-		url,
-		http.DefaultClient,
 		ctx,
+		client,
+		url,
+		lang,
 		parseCookie(cookie),
 		"",
 	}
@@ -78,6 +93,11 @@ func (c *Client) doRequest(method, spath string, header map[string]string, body 
 	}
 	for k, v := range header {
 		req.Header.Add(k, v)
+	}
+	if c.lang == LangJa {
+		req.Header.Add("Accept-Language", "ja,en;q=0.9")
+	} else {
+		req.Header.Add("Accept-Language", "en,ja;q=0.9")
 	}
 	req.AddCookie(c.session)
 

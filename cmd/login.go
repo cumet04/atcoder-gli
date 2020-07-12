@@ -3,6 +3,8 @@ package cmd
 import (
 	"atcoder-gli/atcoder"
 	"context"
+	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -18,6 +20,10 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		ac := atcoder.NewAtCoder(ctx)
-		ac.Login(args[0], args[1])
+		if err := ac.Login(args[0], args[1]); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return
+		}
+		fmt.Println("Login succeeded")
 	},
 }
