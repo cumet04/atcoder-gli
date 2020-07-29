@@ -20,10 +20,17 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		ac := atcoder.NewAtCoder(ctx)
-		if err := ac.Login(args[0], args[1]); err != nil {
+		cookie, err := ac.Login(args[0], args[1])
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return
 		}
+		sessionData.Set("cookie", cookie)
+		err = sessionData.WriteConfig()
+		if err != nil {
+			panic(err)
+		}
+
 		fmt.Println("Login succeeded")
 	},
 }

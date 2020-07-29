@@ -22,15 +22,15 @@ func NewAtCoder(ctx context.Context) *AtCoder {
 	}
 }
 
-// Login executes login sequence with user/pass
-func (ac *AtCoder) Login(user, pass string) error {
+// Login executes login sequence with user/pass, and return cookie data
+func (ac *AtCoder) Login(user, pass string) (string, error) {
 	resp, err := ac.client.DoGet("/login")
 	if err != nil {
-		return errors.Wrap(err, "request '[GET] /login' failed")
+		return "", errors.Wrap(err, "request '[GET] /login' failed")
 	}
 	if resp.StatusCode != 200 {
 		msg := fmt.Sprintf("'[GET] /login' returns unexpected status: %d", resp.StatusCode)
-		return errors.New(msg)
+		return "", errors.New(msg)
 	}
 
 	defer resp.Body.Close()
@@ -46,16 +46,15 @@ func (ac *AtCoder) Login(user, pass string) error {
 		"csrf_token": token,
 	})
 	if err != nil {
-		return errors.Wrap(err, "request '[POST] /login' failed")
+		return "", errors.Wrap(err, "request '[POST] /login' failed")
 	}
 
 	if resp.Header.Get("Location") != "/home" {
 		msg := extractFlash(resp.Cookies(), "error")
-		return errors.New("Login to AtCoder is failed with message: " + msg)
+		return "", errors.New("Login to AtCoder is failed with message: " + msg)
 	}
 
-	// TODO: save session
-	return nil
+	return ac.client.GetCookie(), nil
 }
 
 func extractFlash(cookies []*http.Cookie, key string) string {
