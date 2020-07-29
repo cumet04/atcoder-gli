@@ -52,6 +52,23 @@ func (ac *AtCoder) Login(user, pass string) (string, error) {
 	return ac.client.GetCookie(), nil
 }
 
+// CheckSession attempt to get current session's user name from top page's header
+func (ac *AtCoder) CheckSession() (string, error) {
+	resp, err := ac.client.DoGet("/", 200)
+	if err != nil {
+		return "", err
+	}
+
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	name := doc.Find(".header-mypage .user-gray").First().Text()
+
+	return name, nil
+}
+
 func extractFlash(cookies []*http.Cookie, key string) string {
 	var raw string
 	for _, cookie := range cookies {
