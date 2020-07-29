@@ -2,7 +2,6 @@ package atcoder
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -16,21 +15,17 @@ type AtCoder struct {
 }
 
 // NewAtCoder creates new AtCoder instance with context
-func NewAtCoder(ctx context.Context) *AtCoder {
+func NewAtCoder(ctx context.Context, cookie string) *AtCoder {
 	return &AtCoder{
-		NewClient(ctx, "https://atcoder.jp", LangJa, ""),
+		NewClient(ctx, "https://atcoder.jp", LangJa, cookie),
 	}
 }
 
 // Login executes login sequence with user/pass, and return cookie data
 func (ac *AtCoder) Login(user, pass string) (string, error) {
-	resp, err := ac.client.DoGet("/login")
+	resp, err := ac.client.DoGet("/login", 200)
 	if err != nil {
-		return "", errors.Wrap(err, "request '[GET] /login' failed")
-	}
-	if resp.StatusCode != 200 {
-		msg := fmt.Sprintf("'[GET] /login' returns unexpected status: %d", resp.StatusCode)
-		return "", errors.New(msg)
+		return "", err
 	}
 
 	defer resp.Body.Close()
@@ -40,13 +35,13 @@ func (ac *AtCoder) Login(user, pass string) (string, error) {
 	}
 	token, _ := doc.Find("input[name=csrf_token]").First().Attr("value")
 
-	resp, err = ac.client.DoFormPost("/login", map[string]string{
+	resp, err = ac.client.DoFormPost("/login", 302, map[string]string{
 		"username":   user,
 		"password":   pass,
 		"csrf_token": token,
 	})
 	if err != nil {
-		return "", errors.Wrap(err, "request '[POST] /login' failed")
+		return "", err
 	}
 
 	if resp.Header.Get("Location") != "/home" {

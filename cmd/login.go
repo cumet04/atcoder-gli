@@ -10,27 +10,28 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(
+		&cobra.Command{
+			Use:   "login",
+			Short: "login to AtCoder",
+			Args:  cobra.ExactArgs(2),
+			Run:   runLogin,
+		})
 }
 
-var versionCmd = &cobra.Command{
-	Use:   "login",
-	Short: "login to AtCoder",
-	Args:  cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-		ac := atcoder.NewAtCoder(ctx)
-		cookie, err := ac.Login(args[0], args[1])
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			return
-		}
-		sessionData.Set("cookie", cookie)
-		err = sessionData.WriteConfig()
-		if err != nil {
-			panic(err)
-		}
+func runLogin(cmd *cobra.Command, args []string) {
+	ctx := context.Background()
+	ac := atcoder.NewAtCoder(ctx, "")
+	cookie, err := ac.Login(args[0], args[1])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return
+	}
+	sessionData.Set("cookie", cookie)
+	err = sessionData.WriteConfig()
+	if err != nil {
+		panic(err)
+	}
 
-		fmt.Println("Login succeeded")
-	},
+	fmt.Println("Login succeeded")
 }

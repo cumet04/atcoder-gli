@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"path"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type Lang int
@@ -64,12 +66,20 @@ func (c *Client) GetCookie() string {
 }
 
 // DoGet sends GET request
-func (c *Client) DoGet(spath string) (*http.Response, error) {
-	return c.doRequest("GET", spath, nil, nil)
+func (c *Client) DoGet(spath string, expect int) (*http.Response, error) {
+	resp, err := c.doRequest("GET", spath, nil, nil)
+	if err != nil {
+		return nil, errors.Wrapf(err, "request '[GET] %s' failed", spath)
+	}
+	if resp.StatusCode != expect {
+		msg := fmt.Sprintf("'[GET] %s' returns unexpected status: %d", spath, resp.StatusCode)
+		return nil, errors.New(msg)
+	}
+	return resp, nil
 }
 
 // DoFormPost sends Form POST request
-func (c *Client) DoFormPost(spath string, params map[string]string) (*http.Response, error) {
+func (c *Client) DoFormPost(spath string, expect int, params map[string]string) (*http.Response, error) {
 	formdata := []string{}
 	for k, v := range params {
 		value := url.QueryEscape(v)
@@ -80,7 +90,16 @@ func (c *Client) DoFormPost(spath string, params map[string]string) (*http.Respo
 	headers := map[string]string{
 		"Content-Type": "application/x-www-form-urlencoded",
 	}
-	return c.doRequest("POST", spath, headers, bodyReader)
+
+	resp, err := c.doRequest("POST", spath, headers, bodyReader)
+	if err != nil {
+		return nil, errors.Wrapf(err, "request '[POST] /%s' failed", spath)
+	}
+	if resp.StatusCode != expect {
+		msg := fmt.Sprintf("'[POST] %s' returns unexpected status: %d", spath, resp.StatusCode)
+		return nil, errors.New(msg)
+	}
+	return resp, nil
 }
 
 func (c *Client) doRequest(method, spath string, header map[string]string, body io.Reader) (*http.Response, error) {
