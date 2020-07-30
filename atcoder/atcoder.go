@@ -2,6 +2,7 @@ package atcoder
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -67,6 +68,38 @@ func (ac *AtCoder) CheckSession() (string, error) {
 	name := doc.Find(".header-mypage .user-gray").First().Text()
 
 	return name, nil
+}
+
+// FetchContest attempt to get specified contest's summary
+func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
+	resp, err := ac.client.DoGet(fmt.Sprintf("/contests/%s/tasks", id), 200)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	name := doc.Find(".navbar .contest-title").First().Text()
+	var problems []Problem
+	doc.Find("table tbody tr").Each(func(i int, tr *goquery.Selection) {
+		links := tr.Find("td a")
+
+		url, _ := links.First().Attr("href")
+		dirs := strings.Split(url, "/")
+		pid := dirs[len(dirs)-1]
+
+		problems = append(problems, *NewProblem(
+			pid,
+			links.First().Text(),
+			links.Eq(1).Text(),
+		))
+	})
+
+	return NewContest(id, name, problems), nil
 }
 
 func extractFlash(cookies []*http.Cookie, key string) string {

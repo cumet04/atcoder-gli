@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"atcoder-gli/atcoder"
-	"context"
 	"fmt"
 	"os"
 
@@ -19,8 +18,7 @@ func init() {
 }
 
 func runSession(cmd *cobra.Command, args []string) {
-	ctx := context.Background()
-	ac := atcoder.NewAtCoder(ctx, sessionData.GetString("cookie"))
+	ac := atcoder.NewAtCoder(cmd.Context(), sessionData.GetString("cookie"))
 	name, err := ac.CheckSession()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
