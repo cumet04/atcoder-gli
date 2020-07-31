@@ -94,6 +94,7 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 		pid := dirs[len(dirs)-1]
 
 		problems = append(problems, *NewProblem(
+			id,
 			pid,
 			links.First().Text(),
 			links.Eq(1).Text(),
@@ -101,6 +102,36 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 	})
 
 	return NewContest(id, name, problems), nil
+}
+
+// FetchSampleInout attemt to get a problem's list of sample in/out pair
+func (ac *AtCoder) FetchSampleInout(contestID, problemID string) (*[]Sample, error) {
+	resp, err := ac.client.DoGet(
+		fmt.Sprintf("/contests/%s/tasks/%s", contestID, problemID),
+		200,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	// MEMO: This code doesn't work with old contests (before 2014-04)
+	var samples []Sample
+	pres := doc.Find("#task-statement .lang-ja h3+pre")
+	for i := 0; i < pres.Length(); i += 2 {
+		samples = append(samples, *NewSample(
+			problemID,
+			strings.Split(pres.Eq(i).Prev().Text(), " ")[1],
+			strings.TrimSuffix(pres.Eq(i).Text(), "\n"),
+			strings.TrimSuffix(pres.Eq(i+1).Text(), "\n"),
+		))
+	}
+	return &samples, nil
 }
 
 func extractFlash(cookies []*http.Cookie, key string) string {
