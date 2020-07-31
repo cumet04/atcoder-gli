@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// AtCoder is an application interface to get/send various data from AtCoder website
 type AtCoder struct {
 	client Client
 }

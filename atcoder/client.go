@@ -12,13 +12,17 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Lang is language type used as request's Accept-Language header
 type Lang int
 
 const (
+	// LangJa is language: japanese
 	LangJa Lang = iota
+	// LangEn is language: english
 	LangEn
 )
 
+// A Client has web client params
 type Client struct {
 	ctx       context.Context
 	client    *http.Client
