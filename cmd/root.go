@@ -49,27 +49,23 @@ func initConfig() {
 	sessionData.SetConfigType("json")
 	var defaultSessionDir string
 	if sessionDir != "" {
-		sessionData.AddConfigPath(defaultSessionDir)
 		defaultSessionDir = sessionDir
+		sessionData.AddConfigPath(defaultSessionDir)
 	} else {
 		ucd, err := os.UserConfigDir()
 		if err == nil {
-			sessionData.AddConfigPath(filepath.Join(ucd, "atcoder-gli"))
-			defaultSessionDir = ucd
-		}
-		homedir, err := os.UserHomeDir()
-		if err == nil {
-			sessionData.AddConfigPath(filepath.Join(homedir, "atcoder-gli"))
-			if defaultSessionDir == "" {
-				defaultSessionDir = homedir
-			}
+			defaultSessionDir = filepath.Join(ucd, "atcoder-gli")
+			sessionData.AddConfigPath(defaultSessionDir)
 		}
 	}
 	if err := sessionData.ReadInConfig(); err != nil {
+		if err := os.MkdirAll(defaultSessionDir, 0755); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to create default session dir: %s", err)
+			os.Exit(1)
+		}
 		filename := filepath.Join(defaultSessionDir, "session.json")
-		_, err := os.Create(filename)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to initialize sesion file: %s", err)
+		if _, err := os.Create(filename); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to initialize session file: %s", err)
 			os.Exit(1)
 		}
 	}
