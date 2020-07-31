@@ -16,12 +16,12 @@ func NewContest(id string, name string, problems []Problem) *Contest {
 	}
 }
 
-// ID returns contest's id
+// ID returns contest's id (ex. "abc100")
 func (c *Contest) ID() string {
 	return c.id
 }
 
-// Name returns contest's name
+// Name returns contest's name (ex. "AtCoder Beginner Contest 100")
 func (c *Contest) Name() string {
 	return c.name
 }
