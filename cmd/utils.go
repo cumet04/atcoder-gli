@@ -6,6 +6,10 @@ import (
 )
 
 func exitWithError(format string, a ...interface{}) {
-	fmt.Fprintf(os.Stderr, format+"\n", a)
+	if len(a) > 0 {
+		fmt.Fprintf(os.Stderr, format+"\n", a)
+	} else {
+		fmt.Fprintln(os.Stderr, format)
+	}
 	os.Exit(1)
 }

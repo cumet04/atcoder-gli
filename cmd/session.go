@@ -28,7 +28,6 @@ func runSession(cmd *cobra.Command, args []string) {
 	if name != "" {
 		fmt.Printf("You are logged in as %s\n", name)
 	} else {
-		fmt.Println("You are not logged in to AtCoder")
-		os.Exit(1)
+		exitWithError("You are not logged in to AtCoder")
 	}
 }
