@@ -1,16 +1,15 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	sessionDir  string
 	configData  *viper.Viper
 	sessionData *viper.Viper
 
@@ -28,46 +27,50 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVar(&sessionDir, "session-dir", "",
-		"session file directory ($XDG_CONFIG_HOME or $HOME at default)")
 }
 
 func initConfig() {
-	configData = viper.New()
-	configData.SetConfigName(".atcoder-gli")
-	configData.SetConfigType("json")
 	cwd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
-	configData.AddConfigPath(cwd)
-	configData.AddConfigPath(filepath.Dir(cwd))
+	c := viper.New()
+	c.SetConfigName(".atcoder-gli")
+	c.SetConfigType("json")
+	c.AddConfigPath(cwd)
+	c.AddConfigPath(filepath.Dir(cwd))
+	c.SetDefault("root", ".")
+	c.ReadInConfig()
+	configData = c
 
-	sessionData = viper.New()
-	sessionData.SetConfigName("session")
-	sessionData.SetConfigType("json")
-	var defaultSessionDir string
-	if sessionDir != "" {
-		defaultSessionDir = sessionDir
-		sessionData.AddConfigPath(defaultSessionDir)
-	} else {
-		ucd, err := os.UserConfigDir()
-		if err == nil {
-			defaultSessionDir = filepath.Join(ucd, "atcoder-gli")
-			sessionData.AddConfigPath(defaultSessionDir)
-		}
+	s := viper.New()
+	s.SetConfigName("session")
+	s.SetConfigType("json")
+	s.AddConfigPath(sessionDir())
+	s.SetDefault("cookie", "")
+	s.ReadInConfig()
+	sessionData = s
+}
+
+func sessionDir() string {
+	confdir, err := os.UserConfigDir()
+	if err != nil {
+		panic(err)
 	}
-	if err := sessionData.ReadInConfig(); err != nil {
-		if err := os.MkdirAll(defaultSessionDir, 0755); err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to create default session dir: %s", err)
-			os.Exit(1)
-		}
-		filename := filepath.Join(defaultSessionDir, "session.json")
-		if _, err := os.Create(filename); err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to initialize session file: %s", err)
-			os.Exit(1)
-		}
+	return filepath.Join(confdir, "atcoder-gli")
+}
+
+func saveSession(cookie string) error {
+	dir := sessionDir()
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return errors.Wrapf(err, "Cannot create session directory: %s", dir)
 	}
-	sessionData.SetDefault("cookie", "")
+	filename := filepath.Join(dir, "session.json")
+	if _, err := os.OpenFile(filename, os.O_CREATE, 0644); err != nil {
+		return errors.Wrapf(err, "Cannot initialize session file: %s", filename)
+	}
+
+	sessionData.Set("cookie", cookie)
+	sessionData.WriteConfig()
+	return nil
 }

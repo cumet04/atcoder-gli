@@ -52,9 +52,7 @@ func runLogin(cmd *cobra.Command, args []string) {
 		fmt.Fprintln(os.Stderr, err)
 		return
 	}
-	sessionData.Set("cookie", cookie)
-	err = sessionData.WriteConfig()
-	if err != nil {
+	if err = saveSession(cookie); err != nil {
 		panic(err)
 	}
 
