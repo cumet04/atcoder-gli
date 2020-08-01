@@ -16,7 +16,7 @@ import (
 func init() {
 	rootCmd.AddCommand(
 		&cobra.Command{
-			Use:   "new",
+			Use:   "new CONTEST_ID",
 			Short: "create files for a contest",
 			Long:  "create new directories & files for a specified contest",
 			Run:   runNew,

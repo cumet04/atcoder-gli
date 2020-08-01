@@ -14,7 +14,7 @@ func init() {
 	rootCmd.AddCommand(
 		&cobra.Command{
 			// TODO: argsの説明（省略したらプロンプトになるなど）を入れたい
-			Use:   "login [username] [password]",
+			Use:   "login [USERNAME] [PASSWORD]",
 			Short: "login to AtCoder",
 			Args:  cobra.MaximumNArgs(2),
 			Run:   runLogin,

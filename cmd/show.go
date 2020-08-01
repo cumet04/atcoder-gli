@@ -11,7 +11,7 @@ import (
 func init() {
 	rootCmd.AddCommand(
 		&cobra.Command{
-			Use:   "show",
+			Use:   "show CONTEST_ID",
 			Short: "show contest summary",
 			Run:   runShow,
 			Args:  cobra.ExactArgs(1),
