@@ -11,15 +11,26 @@ import (
 func init() {
 	rootCmd.AddCommand(
 		&cobra.Command{
-			Use:   "show CONTEST_ID",
+			Use:   "show [CONTEST_ID]",
 			Short: "show contest summary",
 			Run:   runShow,
-			Args:  cobra.ExactArgs(1),
+			Args:  cobra.MaximumNArgs(1),
 		})
 }
 
 func runShow(cmd *cobra.Command, args []string) {
-	id := args[0]
+	var id string
+	if len(args) > 0 {
+		id = args[0]
+	} else {
+		id = currentContestDir()
+		if id == "" {
+			exitWithError(
+				"Cannot determin contest id.\n" +
+					"Specify contest id as command arg, or run command in contest directory.",
+			)
+		}
+	}
 
 	ac := atcoder.NewAtCoder(cmd.Context(), sessionData.GetString("cookie"))
 	contest, err := ac.FetchContest(id)

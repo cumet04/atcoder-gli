@@ -22,9 +22,22 @@ var (
 )
 
 type Config struct {
-	Root         string
+	root         string
 	SampleDir    string `mapstructure:"sample_dir"`
 	SkeletonFile string `mapstructure:"skeleton_file"`
+}
+
+// Root returns resolved absolute path of config.root
+func (c *Config) Root() string {
+	if filepath.IsAbs(c.root) {
+		return c.root
+	}
+	confdir := filepath.Dir(configData.ConfigFileUsed())
+	dir, err := filepath.Abs(filepath.Join(confdir, c.root))
+	if err != nil {
+		panic(err)
+	}
+	return dir
 }
 
 // Execute run rootCmd
@@ -37,15 +50,12 @@ func init() {
 }
 
 func initConfig() {
-	cwd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
 	c := viper.New()
 	c.SetConfigName(".atcoder-gli")
 	c.SetConfigType("json")
-	c.AddConfigPath(cwd)
-	c.AddConfigPath(filepath.Dir(cwd))
+	c.AddConfigPath(cwd())
+	c.AddConfigPath(filepath.Dir(cwd()))
+	c.AddConfigPath(filepath.Dir(filepath.Dir(cwd())))
 	c.SetDefault("root", ".")
 	c.SetDefault("sample_dir", "samples")
 	c.SetDefault("skeleton_file", "")
@@ -63,7 +73,7 @@ func initConfig() {
 }
 
 func saveConfig() error {
-	file := filepath.Join(config.Root, ".atcoder-gli.json")
+	file := filepath.Join(config.Root(), ".atcoder-gli.json")
 	return configData.WriteConfigAs(file)
 }
 

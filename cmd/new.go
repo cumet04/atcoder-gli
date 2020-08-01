@@ -51,7 +51,7 @@ func runNew(cmd *cobra.Command, args []string) {
 
 		if config.SkeletonFile != "" {
 			err := copyFile(
-				filepath.Join(config.Root, config.SkeletonFile),
+				filepath.Join(config.Root(), config.SkeletonFile),
 				filepath.Join(problemDir, filepath.Base(config.SkeletonFile)),
 			)
 			if err != nil {
