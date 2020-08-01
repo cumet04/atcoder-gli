@@ -101,7 +101,7 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 		))
 	})
 
-	return NewContest(id, title, tasks), nil
+	return NewContest(id, title, resp.Request.URL.String(), tasks), nil
 }
 
 // FetchSampleInout attemt to get a task's list of sample in/out pair
