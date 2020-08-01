@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	config      Config
 	configData  *viper.Viper
 	sessionData *viper.Viper
 
@@ -19,6 +20,12 @@ var (
 		Long:  "accoder-cli on golang",
 	}
 )
+
+type Config struct {
+	Root         string
+	SampleDir    string `mapstructure:"sample_dir"`
+	SkeletonFile string `mapstructure:"skeleton_file"`
+}
 
 // Execute run rootCmd
 func Execute() error {
@@ -40,7 +47,10 @@ func initConfig() {
 	c.AddConfigPath(cwd)
 	c.AddConfigPath(filepath.Dir(cwd))
 	c.SetDefault("root", ".")
+	c.SetDefault("sample_dir", "samples")
+	c.SetDefault("skeleton_file", "")
 	c.ReadInConfig()
+	c.Unmarshal(&config)
 	configData = c
 
 	s := viper.New()
@@ -50,6 +60,11 @@ func initConfig() {
 	s.SetDefault("cookie", "")
 	s.ReadInConfig()
 	sessionData = s
+}
+
+func saveConfig() error {
+	file := filepath.Join(config.Root, ".atcoder-gli.json")
+	return configData.WriteConfigAs(file)
 }
 
 func sessionDir() string {
