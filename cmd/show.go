@@ -39,9 +39,9 @@ func runShow(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	fmt.Printf("%s (%s)\n", contest.Name(), contest.ID())
+	fmt.Printf("%s (%s)\n", contest.Title(), contest.ID())
 	fmt.Println("-----")
-	for _, p := range contest.Problems() {
-		fmt.Printf("%s - %s\n", p.Label(), p.Name())
+	for _, p := range contest.Tasks() {
+		fmt.Printf("%s - %s\n", p.Label(), p.Title())
 	}
 }

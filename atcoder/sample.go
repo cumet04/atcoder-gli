@@ -1,26 +1,26 @@
 package atcoder
 
-// A Sample represents a pair of problem's sample input/output
+// A Sample represents a pair of task's sample input/output
 type Sample struct {
-	problemID string
-	label     string
-	input     string
-	output    string
+	taskID string
+	label  string
+	input  string
+	output string
 }
 
 // NewSample creates a instance of Sample
-func NewSample(problemID, label, input, output string) *Sample {
+func NewSample(taskID, label, input, output string) *Sample {
 	return &Sample{
-		problemID: problemID,
-		label:     label,
-		input:     input,
-		output:    output,
+		taskID: taskID,
+		label:  label,
+		input:  input,
+		output: output,
 	}
 }
 
-// ProblemID returns problem id that sample belongs to (ex. "abc100_a")
-func (s *Sample) ProblemID() string {
-	return s.problemID
+// TaskID returns task id that sample belongs to (ex. "abc100_a")
+func (s *Sample) TaskID() string {
+	return s.taskID
 }
 
 // Label returns sample's label (ex. "1" for 入力例1/出力例1)

@@ -42,9 +42,9 @@ func runNew(cmd *cobra.Command, args []string) {
 		exitWithError("Failed to create contest directory: %s", err)
 	}
 
-	for _, p := range contest.Problems() {
-		problemDir := filepath.Join(contestDir, strings.ToLower(p.Label()))
-		sampleDir := filepath.Join(problemDir, config.SampleDir)
+	for _, t := range contest.Tasks() {
+		taskDir := filepath.Join(contestDir, strings.ToLower(t.Label()))
+		sampleDir := filepath.Join(taskDir, config.SampleDir)
 		if err := os.MkdirAll(sampleDir, 0755); err != nil {
 			exitWithError("Failed to create sample directory: %s", err)
 		}
@@ -52,16 +52,16 @@ func runNew(cmd *cobra.Command, args []string) {
 		if config.SkeletonFile != "" {
 			err := copyFile(
 				filepath.Join(config.Root(), config.SkeletonFile),
-				filepath.Join(problemDir, filepath.Base(config.SkeletonFile)),
+				filepath.Join(taskDir, filepath.Base(config.SkeletonFile)),
 			)
 			if err != nil {
 				exitWithError("Failed to copy skeleton file: %s\n", err)
 			}
 		}
 
-		samples, err := ac.FetchSampleInout(p.ContestID(), p.ID())
+		samples, err := ac.FetchSampleInout(t.ContestID(), t.ID())
 		if err != nil {
-			exitWithError("Failed to fetch problem info: %s", err)
+			exitWithError("Failed to fetch task info: %s", err)
 		}
 		for _, s := range *samples {
 			name := fmt.Sprintf("sample_%s", s.Label())

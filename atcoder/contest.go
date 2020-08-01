@@ -2,17 +2,17 @@ package atcoder
 
 // A Contest represents a contest of AtCoder; ex. abc100
 type Contest struct {
-	id       string
-	name     string
-	problems []Problem
+	id    string
+	title string
+	tasks []Task
 }
 
 // NewContest creates a instance of Contest
-func NewContest(id string, name string, problems []Problem) *Contest {
+func NewContest(id string, title string, tasks []Task) *Contest {
 	return &Contest{
-		id:       id,
-		name:     name,
-		problems: problems,
+		id:    id,
+		title: title,
+		tasks: tasks,
 	}
 }
 
@@ -21,12 +21,12 @@ func (c *Contest) ID() string {
 	return c.id
 }
 
-// Name returns contest's name (ex. "AtCoder Beginner Contest 100")
-func (c *Contest) Name() string {
-	return c.name
+// Title returns contest's title (ex. "AtCoder Beginner Contest 100")
+func (c *Contest) Title() string {
+	return c.title
 }
 
-// Problems returns contest's problems
-func (c *Contest) Problems() []Problem {
-	return c.problems
+// Tasks returns contest's tasks
+func (c *Contest) Tasks() []Task {
+	return c.tasks
 }

@@ -84,8 +84,8 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 		panic(err)
 	}
 
-	name := doc.Find(".navbar .contest-title").First().Text()
-	var problems []Problem
+	title := doc.Find(".navbar .contest-title").First().Text()
+	var tasks []Task
 	doc.Find("table tbody tr").Each(func(i int, tr *goquery.Selection) {
 		links := tr.Find("td a")
 
@@ -93,7 +93,7 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 		dirs := strings.Split(url, "/")
 		pid := dirs[len(dirs)-1]
 
-		problems = append(problems, *NewProblem(
+		tasks = append(tasks, *NewTask(
 			id,
 			pid,
 			links.First().Text(),
@@ -101,13 +101,13 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 		))
 	})
 
-	return NewContest(id, name, problems), nil
+	return NewContest(id, title, tasks), nil
 }
 
-// FetchSampleInout attemt to get a problem's list of sample in/out pair
-func (ac *AtCoder) FetchSampleInout(contestID, problemID string) (*[]Sample, error) {
+// FetchSampleInout attemt to get a task's list of sample in/out pair
+func (ac *AtCoder) FetchSampleInout(contestID, taskID string) (*[]Sample, error) {
 	resp, err := ac.client.DoGet(
-		fmt.Sprintf("/contests/%s/tasks/%s", contestID, problemID),
+		fmt.Sprintf("/contests/%s/tasks/%s", contestID, taskID),
 		200,
 	)
 	if err != nil {
@@ -125,7 +125,7 @@ func (ac *AtCoder) FetchSampleInout(contestID, problemID string) (*[]Sample, err
 	pres := doc.Find("#task-statement .lang-ja h3+pre")
 	for i := 0; i < pres.Length(); i += 2 {
 		samples = append(samples, *NewSample(
-			problemID,
+			taskID,
 			strings.Split(pres.Eq(i).Prev().Text(), " ")[1],
 			strings.TrimSuffix(pres.Eq(i).Text(), "\n"),
 			strings.TrimSuffix(pres.Eq(i+1).Text(), "\n"),
