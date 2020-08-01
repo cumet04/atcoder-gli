@@ -32,7 +32,7 @@ func runShow(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	ac := atcoder.NewAtCoder(cmd.Context(), sessionData.GetString("cookie"))
+	ac := atcoder.NewAtCoder(cmd.Context(), session)
 	contest, err := ac.FetchContest(id)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

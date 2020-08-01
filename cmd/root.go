@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -10,9 +11,9 @@ import (
 )
 
 var (
-	config      Config
-	configData  *viper.Viper
-	sessionData *viper.Viper
+	config     Config
+	configData *viper.Viper
+	session    string
 
 	rootCmd = &cobra.Command{
 		Use:   "acg",
@@ -63,13 +64,11 @@ func initConfig() {
 	c.Unmarshal(&config)
 	configData = c
 
-	s := viper.New()
-	s.SetConfigName("session")
-	s.SetConfigType("json")
-	s.AddConfigPath(sessionDir())
-	s.SetDefault("cookie", "")
-	s.ReadInConfig()
-	sessionData = s
+	var err error
+	session, err = readSession()
+	if err != nil {
+		session = ""
+	}
 }
 
 func saveConfig() error {
@@ -77,25 +76,39 @@ func saveConfig() error {
 	return configData.WriteConfigAs(file)
 }
 
-func sessionDir() string {
+// session ----------
+
+func sessionFile() string {
 	confdir, err := os.UserConfigDir()
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Join(confdir, "atcoder-gli")
+	return filepath.Join(confdir, "atcoder-gli", "session")
+}
+
+func readSession() (string, error) {
+	b, err := ioutil.ReadFile(sessionFile())
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }
 
 func saveSession(cookie string) error {
-	dir := sessionDir()
+	dir := filepath.Dir(sessionFile())
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return errors.Wrapf(err, "Cannot create session directory: %s", dir)
 	}
-	filename := filepath.Join(dir, "session.json")
-	if _, err := os.OpenFile(filename, os.O_CREATE, 0644); err != nil {
-		return errors.Wrapf(err, "Cannot initialize session file: %s", filename)
+
+	file, err := os.OpenFile(sessionFile(), os.O_CREATE, 0644)
+	if err != nil {
+		return errors.Wrapf(err, "Cannot initialize session file: %s", sessionFile())
 	}
 
-	sessionData.Set("cookie", cookie)
-	sessionData.WriteConfig()
+	_, err = file.WriteString(cookie)
+	if err != nil {
+		return errors.Wrapf(err, "Cannot write session to file")
+	}
+
 	return nil
 }

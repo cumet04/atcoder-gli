@@ -28,7 +28,7 @@ func runNew(cmd *cobra.Command, args []string) {
 	// TODO: file/dir name template
 	id := args[0]
 
-	ac := atcoder.NewAtCoder(cmd.Context(), sessionData.GetString("cookie"))
+	ac := atcoder.NewAtCoder(cmd.Context(), session)
 	contest, err := ac.FetchContest(id)
 	if err != nil {
 		exitWithError("Failed to fetch contest info: %s", err)
