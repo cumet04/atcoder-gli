@@ -2,38 +2,22 @@ package atcoder
 
 // A Contest represents a contest of AtCoder; ex. abc100
 type Contest struct {
-	id    string
-	title string
-	url   string
-	tasks []Task
+	// ID returns contest's ID (ex. "abc100")
+	ID string `json:"id"`
+	// Title returns contest's Title (ex. "AtCoder Beginner Contest 100")
+	Title string `json:"title"`
+	// URL returns contest's URL (ex. "https://atcoder.jp/contests/abc100")
+	URL string `json:"url"`
+	// Tasks returns contest's Tasks
+	Tasks []Task `json:"tasks"`
 }
 
 // NewContest creates a instance of Contest
 func NewContest(id, title, url string, tasks []Task) *Contest {
 	return &Contest{
-		id:    id,
-		title: title,
-		url:   url,
-		tasks: tasks,
+		ID:    id,
+		Title: title,
+		URL:   url,
+		Tasks: tasks,
 	}
-}
-
-// ID returns contest's id (ex. "abc100")
-func (c *Contest) ID() string {
-	return c.id
-}
-
-// Title returns contest's title (ex. "AtCoder Beginner Contest 100")
-func (c *Contest) Title() string {
-	return c.title
-}
-
-// URL returns contest's url (ex. "https://atcoder.jp/contests/abc100")
-func (c *Contest) URL() string {
-	return c.url
-}
-
-// Tasks returns contest's tasks
-func (c *Contest) Tasks() []Task {
-	return c.tasks
 }

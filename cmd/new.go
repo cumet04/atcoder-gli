@@ -33,7 +33,7 @@ func runNew(cmd *cobra.Command, args []string) {
 	if err != nil {
 		exitWithError("Failed to fetch contest info: %s", err)
 	}
-	contestDir := contest.ID()
+	contestDir := contest.ID
 	if _, err := os.Stat(contestDir); err == nil {
 		fmt.Printf("Contest directory, %s, is already exists. abort.\n", contestDir)
 		return
@@ -42,24 +42,24 @@ func runNew(cmd *cobra.Command, args []string) {
 		exitWithError("Failed to create contest directory: %s", err)
 	}
 
-	for _, t := range contest.Tasks() {
-		taskDir := filepath.Join(contestDir, strings.ToLower(t.Label()))
+	for _, t := range contest.Tasks {
+		taskDir := filepath.Join(contestDir, strings.ToLower(t.Label))
 		sampleDir := filepath.Join(taskDir, config.SampleDir)
 		if err := os.MkdirAll(sampleDir, 0755); err != nil {
 			exitWithError("Failed to create sample directory: %s", err)
 		}
 
-		if config.SkeletonFile != "" {
+		if config.SkeletonFilePath() != "" {
 			err := copyFile(
-				filepath.Join(config.Root(), config.SkeletonFile),
-				filepath.Join(taskDir, filepath.Base(config.SkeletonFile)),
+				config.SkeletonFilePath(),
+				filepath.Join(taskDir, filepath.Base(config.SkeletonFilePath())),
 			)
 			if err != nil {
 				exitWithError("Failed to copy skeleton file: %s\n", err)
 			}
 		}
 
-		samples, err := ac.FetchSampleInout(t.ContestID(), t.ID())
+		samples, err := ac.FetchSampleInout(t.ContestID, t.ID)
 		if err != nil {
 			exitWithError("Failed to fetch task info: %s", err)
 		}
@@ -70,7 +70,7 @@ func runNew(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	if err := saveConfig(); err != nil {
+	if err := saveContestInfo(*contest, contestDir); err != nil {
 		exitWithError("Failed to save config: %s\n", err)
 	}
 

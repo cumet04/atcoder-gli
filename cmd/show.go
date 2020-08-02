@@ -23,13 +23,17 @@ func runShow(cmd *cobra.Command, args []string) {
 	if len(args) > 0 {
 		id = args[0]
 	} else {
-		id = currentContestDir()
-		if id == "" {
+		_, contest, err := readContestInfo("")
+		if err != nil {
+			exitWithError("Failed to read contest file: %s", err)
+		}
+		if contest == nil {
 			exitWithError(
 				"Cannot determin contest id.\n" +
 					"Specify contest id as command arg, or run command in contest directory.",
 			)
 		}
+		id = contest.ID
 	}
 
 	ac := atcoder.NewAtCoder(cmd.Context(), session)
@@ -39,9 +43,9 @@ func runShow(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	fmt.Printf("%s (%s)\n", contest.Title(), contest.ID())
+	fmt.Printf("%s (%s)\n", contest.Title, contest.ID)
 	fmt.Println("-----")
-	for _, p := range contest.Tasks() {
-		fmt.Printf("%s - %s\n", p.Label(), p.Title())
+	for _, p := range contest.Tasks {
+		fmt.Printf("%s - %s\n", p.Label, p.Title)
 	}
 }

@@ -1,9 +1,15 @@
 package cmd
 
 import (
+	"atcoder-gli/atcoder"
+	"encoding/json"
+	"io/ioutil"
+
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/pkg/errors"
 )
 
 func exitWithError(format string, a ...interface{}) {
@@ -15,6 +21,45 @@ func exitWithError(format string, a ...interface{}) {
 	os.Exit(1)
 }
 
+func saveContestInfo(c atcoder.Contest, path string) error {
+	b, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	filename := filepath.Join(path, ".contest.json")
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	file.Write(b)
+	return nil
+}
+
+func readContestInfo(basepath string) (string, *atcoder.Contest, error) {
+	search := []string{
+		basepath,
+		filepath.Dir(basepath),
+		filepath.Dir(filepath.Dir(basepath)),
+	}
+	for _, dir := range search {
+		file := pathAbs(filepath.Join(dir, ".contest.json"))
+		if _, err := os.Stat(file); err != nil {
+			continue
+		}
+
+		b, err := ioutil.ReadFile(file)
+		if err != nil {
+			return "", nil, err
+		}
+		var contest atcoder.Contest
+		if err := json.Unmarshal(b, &contest); err != nil {
+			return "", nil, errors.Wrap(err, "Cannot parse contest info")
+		}
+		return file, &contest, nil
+	}
+	return "", nil, nil
+}
+
 func cwd() string {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -23,14 +68,10 @@ func cwd() string {
 	return cwd
 }
 
-// currentContestDir returns guessed current directory's contest id from CWD
-func currentContestDir() string {
-	if config.Root() != filepath.Dir(cwd()) {
-		return ""
-	}
-	dir, err := filepath.Rel(config.Root(), cwd())
+func pathAbs(path string) string {
+	file, err := filepath.Abs(path)
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Base(dir)
+	return file
 }

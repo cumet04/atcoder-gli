@@ -23,22 +23,33 @@ var (
 )
 
 type Config struct {
-	root         string
 	SampleDir    string `mapstructure:"sample_dir"`
 	SkeletonFile string `mapstructure:"skeleton_file"`
 }
 
-// Root returns resolved absolute path of config.root
-func (c *Config) Root() string {
-	if filepath.IsAbs(c.root) {
-		return c.root
+// SkeletonFilePath resolves absolute path of skeleton file.
+// This regards SkeletonFile as relative path from CWD or config directory.
+func (c *Config) SkeletonFilePath() string {
+	if c.SkeletonFile == "" {
+		return ""
 	}
-	confdir := filepath.Dir(configData.ConfigFileUsed())
-	dir, err := filepath.Abs(filepath.Join(confdir, c.root))
-	if err != nil {
-		panic(err)
+
+	if filepath.IsAbs(c.SkeletonFile) {
+		return c.SkeletonFile
 	}
-	return dir
+
+	file1 := pathAbs(filepath.Join(configDir(), c.SkeletonFile))
+	if _, err := os.Stat(file1); err == nil {
+		return file1
+	}
+
+	file2 := pathAbs(filepath.Join(cwd(), c.SkeletonFile))
+	if _, err := os.Stat(file2); err == nil {
+		return file2
+	}
+
+	exitWithError("skeleton_file is specified but the file is not found in %s, %s", file1, file2)
+	return "" // MEMO: this line is unreachable; The program exits with exitWithError
 }
 
 // Execute run rootCmd
@@ -52,12 +63,9 @@ func init() {
 
 func initConfig() {
 	c := viper.New()
-	c.SetConfigName(".atcoder-gli")
-	c.SetConfigType("json")
-	c.AddConfigPath(cwd())
-	c.AddConfigPath(filepath.Dir(cwd()))
-	c.AddConfigPath(filepath.Dir(filepath.Dir(cwd())))
-	c.SetDefault("root", ".")
+	c.SetConfigName("config")
+	c.SetConfigType("yml")
+	c.AddConfigPath(configDir())
 	c.SetDefault("sample_dir", "samples")
 	c.SetDefault("skeleton_file", "")
 	c.ReadInConfig()
@@ -71,23 +79,17 @@ func initConfig() {
 	}
 }
 
-func saveConfig() error {
-	file := filepath.Join(config.Root(), ".atcoder-gli.json")
-	return configData.WriteConfigAs(file)
-}
-
-// session ----------
-
-func sessionFile() string {
+func configDir() string {
 	confdir, err := os.UserConfigDir()
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Join(confdir, "atcoder-gli", "session")
+	return filepath.Join(confdir, "atcoder-gli")
 }
 
 func readSession() (string, error) {
-	b, err := ioutil.ReadFile(sessionFile())
+	file := filepath.Join(configDir(), "session")
+	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		return "", err
 	}
@@ -95,14 +97,14 @@ func readSession() (string, error) {
 }
 
 func saveSession(cookie string) error {
-	dir := filepath.Dir(sessionFile())
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return errors.Wrapf(err, "Cannot create session directory: %s", dir)
+	if err := os.MkdirAll(configDir(), 0755); err != nil {
+		return errors.Wrapf(err, "Cannot create session directory: %s", configDir())
 	}
 
-	file, err := os.OpenFile(sessionFile(), os.O_CREATE, 0644)
+	filename := filepath.Join(configDir(), "session")
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return errors.Wrapf(err, "Cannot initialize session file: %s", sessionFile())
+		return errors.Wrapf(err, "Cannot initialize session file: %s", filename)
 	}
 
 	_, err = file.WriteString(cookie)
