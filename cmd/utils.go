@@ -38,8 +38,8 @@ func saveContestInfo(c atcoder.Contest, path string) error {
 func readContestInfo(basepath string) (string, *atcoder.Contest, error) {
 	search := []string{
 		basepath,
-		filepath.Dir(basepath),
-		filepath.Dir(filepath.Dir(basepath)),
+		filepath.Join(basepath, ".."),
+		filepath.Join(basepath, "..", ".."),
 	}
 	for _, dir := range search {
 		file := pathAbs(filepath.Join(dir, ".contest.json"))
