@@ -43,20 +43,24 @@ func runNew(cmd *cobra.Command, args []string) {
 	}
 
 	for _, t := range contest.Tasks {
-		taskDir := filepath.Join(contestDir, strings.ToLower(t.Label))
-		sampleDir := filepath.Join(taskDir, config.SampleDir)
-		if err := os.MkdirAll(sampleDir, 0755); err != nil {
+		taskDir := strings.ToLower(t.Label)
+		taskPath := filepath.Join(contestDir, taskDir)
+		samplePath := filepath.Join(taskPath, config.SampleDir)
+		if err := os.MkdirAll(samplePath, 0755); err != nil {
 			exitWithError("Failed to create sample directory: %s", err)
 		}
+		t.Directory = taskDir
 
 		if config.SkeletonFilePath() != "" {
+			filename := filepath.Base(config.SkeletonFilePath())
 			err := copyFile(
 				config.SkeletonFilePath(),
-				filepath.Join(taskDir, filepath.Base(config.SkeletonFilePath())),
+				filepath.Join(taskPath, filename),
 			)
 			if err != nil {
 				exitWithError("Failed to copy skeleton file: %s\n", err)
 			}
+			t.Script = filename
 		}
 
 		samples, err := ac.FetchSampleInout(t.Contest.ID, t.ID)
@@ -65,8 +69,8 @@ func runNew(cmd *cobra.Command, args []string) {
 		}
 		for _, s := range *samples {
 			name := fmt.Sprintf("sample_%s", s.Label())
-			ioutil.WriteFile(filepath.Join(sampleDir, name+".in"), []byte(s.Input()), 0644)
-			ioutil.WriteFile(filepath.Join(sampleDir, name+".out"), []byte(s.Output()), 0644)
+			ioutil.WriteFile(filepath.Join(samplePath, name+".in"), []byte(s.Input()), 0644)
+			ioutil.WriteFile(filepath.Join(samplePath, name+".out"), []byte(s.Output()), 0644)
 		}
 	}
 
