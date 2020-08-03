@@ -59,7 +59,7 @@ func runNew(cmd *cobra.Command, args []string) {
 			}
 		}
 
-		samples, err := ac.FetchSampleInout(t.ContestID, t.ID)
+		samples, err := ac.FetchSampleInout(t.Contest.ID, t.ID)
 		if err != nil {
 			exitWithError("Failed to fetch task info: %s", err)
 		}

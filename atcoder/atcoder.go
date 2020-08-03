@@ -84,8 +84,11 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 		panic(err)
 	}
 
-	title := doc.Find(".navbar .contest-title").First().Text()
-	var tasks []Task
+	contest := NewContest(
+		id,
+		doc.Find(".navbar .contest-title").First().Text(),
+		resp.Request.URL.String(),
+	)
 	doc.Find("table tbody tr").Each(func(i int, tr *goquery.Selection) {
 		links := tr.Find("td a")
 
@@ -93,15 +96,14 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 		dirs := strings.Split(url, "/")
 		pid := dirs[len(dirs)-1]
 
-		tasks = append(tasks, *NewTask(
-			id,
+		contest.AddTask(*NewTask(
 			pid,
 			links.First().Text(),
 			links.Eq(1).Text(),
 		))
 	})
 
-	return NewContest(id, title, resp.Request.URL.String(), tasks), nil
+	return contest, nil
 }
 
 // FetchSampleInout attemt to get a task's list of sample in/out pair
