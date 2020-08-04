@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 )
 
@@ -58,6 +59,29 @@ func readContestInfo(basepath string) (string, *atcoder.Contest, error) {
 		return file, &contest, nil
 	}
 	return "", nil, nil
+}
+
+func prompt(label string, mask bool) (string, error) {
+	var m rune
+	if mask {
+		m = '*'
+	}
+	prompt := promptui.Prompt{
+		Label: label,
+		Mask:  m,
+		Validate: func(input string) error {
+			if len(input) == 0 {
+				return errors.New("Empty input")
+			}
+			return nil
+		},
+	}
+
+	result, err := prompt.Run()
+	if err != nil {
+		panic(err)
+	}
+	return result, nil
 }
 
 func cwd() string {

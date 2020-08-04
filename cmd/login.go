@@ -2,12 +2,10 @@ package cmd
 
 import (
 	"atcoder-gli/atcoder"
-	"bufio"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 func init() {
@@ -24,6 +22,7 @@ func init() {
 func runLogin(cmd *cobra.Command, args []string) {
 	var user string
 	var pass string
+	var err error
 	if len(args) >= 1 {
 		user = args[0]
 	}
@@ -31,19 +30,16 @@ func runLogin(cmd *cobra.Command, args []string) {
 		pass = args[1]
 	}
 	if user == "" {
-		fmt.Print("Enter Username: ")
-		scanner := bufio.NewScanner(os.Stdin)
-		scanner.Scan()
-		user = scanner.Text()
+		user, err = prompt("Username", false)
+		if err != nil {
+			exitWithError("Prompt username failed: %s", err)
+		}
 	}
 	if pass == "" {
-		fmt.Print("Enter Password: ")
-		bytes, err := terminal.ReadPassword(0)
+		pass, err = prompt("Password", true)
 		if err != nil {
-			panic(err)
+			exitWithError("Prompt password failed: %s", err)
 		}
-		fmt.Println("")
-		pass = string(bytes)
 	}
 
 	ac := atcoder.NewAtCoder(cmd.Context(), "")
