@@ -3,6 +3,7 @@ package atcoder
 import (
 	"context"
 	"fmt"
+	"html"
 	"net/http"
 	"net/url"
 	"strings"
@@ -54,7 +55,7 @@ func (ac *AtCoder) Login(user, pass string) (string, error) {
 	return ac.client.GetCookie(), nil
 }
 
-// CheckSession attempt to get current session's user name from top page's header
+// CheckSession get current session's user name from top page's header
 func (ac *AtCoder) CheckSession() (string, error) {
 	resp, err := ac.client.DoGet("/", 200)
 	if err != nil {
@@ -71,7 +72,37 @@ func (ac *AtCoder) CheckSession() (string, error) {
 	return name, nil
 }
 
-// FetchContest attempt to get specified contest's summary
+// ListLanguages get list of submittable languages
+func (ac *AtCoder) ListLanguages() ([]Language, error) {
+	resp, err := ac.client.DoGet("/contests/practice/submit", 200)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	ops := doc.Find("#select-lang-practice_1 option")
+
+	var list []Language
+	ops.Each(func(i int, s *goquery.Selection) {
+		id, ok := s.Attr("value")
+		if !ok {
+			return
+		}
+		label := s.Text()
+		list = append(list, Language{
+			ID:    id,
+			Label: html.UnescapeString(label),
+		})
+	})
+
+	return list, nil
+}
+
+// FetchContest get specified contest's summary
 func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 	resp, err := ac.client.DoGet(fmt.Sprintf("/contests/%s/tasks", id), 200)
 	if err != nil {
@@ -106,7 +137,7 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 	return contest, nil
 }
 
-// FetchSampleInout attemt to get a task's list of sample in/out pair
+// FetchSampleInout get a task's list of sample in/out pair
 func (ac *AtCoder) FetchSampleInout(contestID, taskID string) (*[]Sample, error) {
 	resp, err := ac.client.DoGet(
 		fmt.Sprintf("/contests/%s/tasks/%s", contestID, taskID),

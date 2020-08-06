@@ -3,7 +3,6 @@ package cmd
 import (
 	"atcoder-gli/atcoder"
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -21,8 +20,7 @@ func runSession(cmd *cobra.Command, args []string) {
 	ac := atcoder.NewAtCoder(cmd.Context(), session)
 	name, err := ac.CheckSession()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
+		exitWithError("%s", err)
 	}
 
 	if name != "" {
