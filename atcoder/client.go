@@ -24,12 +24,11 @@ const (
 
 // A Client has web client params
 type Client struct {
-	ctx       context.Context
-	client    *http.Client
-	endpoint  *url.URL
-	lang      Lang
-	session   *http.Cookie
-	csrfToken string
+	ctx      context.Context
+	client   *http.Client
+	endpoint *url.URL
+	lang     Lang
+	session  *http.Cookie
 }
 
 // NewClient creates new Client instance with endpoint and cookie(string)
@@ -50,7 +49,6 @@ func NewClient(ctx context.Context, endpoint string, lang Lang, cookie string) C
 		url,
 		lang,
 		parseCookie(cookie),
-		"",
 	}
 }
 
