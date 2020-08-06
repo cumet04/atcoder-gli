@@ -14,13 +14,13 @@ type Submission struct {
 
 // NewSubmission creates a instance of Submission.
 // Task is assumed to be injected later.
-func NewSubmission(id, time, memory int, judge string, submittedAt *time.Time) *Submission {
+func NewSubmission(id, time, memory int, judge string, submittedAt time.Time) *Submission {
 	return &Submission{
 		ID:          id,
 		Task:        nil,
 		Time:        time,
 		Memory:      memory,
 		Judge:       judge,
-		SubmittedAt: *submittedAt,
+		SubmittedAt: submittedAt,
 	}
 }

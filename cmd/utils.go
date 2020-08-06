@@ -56,6 +56,9 @@ func readContestInfo(basepath string) (string, *atcoder.Contest, error) {
 		if err := json.Unmarshal(b, &contest); err != nil {
 			return "", nil, errors.Wrap(err, "Cannot parse contest info")
 		}
+		for _, task := range contest.Tasks {
+			task.Contest = &contest
+		}
 		return file, &contest, nil
 	}
 	return "", nil, nil

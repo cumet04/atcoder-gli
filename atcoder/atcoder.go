@@ -6,7 +6,9 @@ import (
 	"html"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/pkg/errors"
@@ -165,6 +167,71 @@ func (ac *AtCoder) FetchSampleInout(contestID, taskID string) (*[]Sample, error)
 		))
 	}
 	return &samples, nil
+}
+
+func (ac *AtCoder) Submit(task *Task, langID, body string) (*Submission, error) {
+	// post code
+
+	path := fmt.Sprintf("/contests/%s/submit", task.Contest.ID)
+	resp, err := ac.client.DoGet(path, 200)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	form := doc.Find(fmt.Sprintf("form[action='%s']", path)).First()
+	token, _ := form.Find("input[name=csrf_token]").First().Attr("value")
+
+	resp, err = ac.client.DoFormPost(path, 302, map[string]string{
+		"data.TaskScreenName": task.ID,
+		"data.LanguageId":     langID,
+		"sourceCode":          body,
+		"csrf_token":          token,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// get latest submission from /submissions/me
+
+	spath := fmt.Sprintf("/contests/%s/submissions/me", task.Contest.ID)
+	resp, err = ac.client.DoGet(spath, 200)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	doc, err = goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var tds *goquery.Selection
+	doc.Find("table tr").EachWithBreak(func(i int, tr *goquery.Selection) bool {
+		title := fmt.Sprintf("%s - %s", task.Label, task.Title)
+		if tr.Find("td > a").First().Text() == title {
+			tds = tr.Find("td")
+			return false
+		}
+		return true
+	})
+
+	sidStr, _ := tds.Eq(4).Attr("data-id")
+	sid, _ := strconv.Atoi(sidStr)
+
+	at, _ := time.Parse("2006-01-02 15:04:05-0700", tds.Find("time").First().Text())
+	submission := NewSubmission(
+		sid,
+		0, // Time/Memory are not determined at this point
+		0,
+		tds.Eq(6).Text(),
+		at,
+	)
+	task.AddSubmission(*submission)
+	return submission, nil
 }
 
 func extractFlash(cookies []*http.Cookie, key string) string {
