@@ -2,8 +2,10 @@ package atcoder
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"html"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -57,7 +59,7 @@ func (ac *AtCoder) Login(user, pass string) (string, error) {
 	return ac.client.GetCookie(), nil
 }
 
-// CheckSession get current session's user name from top page's header
+// CheckSession gets current session's user name from top page's header
 func (ac *AtCoder) CheckSession() (string, error) {
 	resp, err := ac.client.DoGet("/", 200)
 	if err != nil {
@@ -74,7 +76,7 @@ func (ac *AtCoder) CheckSession() (string, error) {
 	return name, nil
 }
 
-// ListLanguages get list of submittable languages
+// ListLanguages gets list of submittable languages
 func (ac *AtCoder) ListLanguages() ([]Language, error) {
 	resp, err := ac.client.DoGet("/contests/practice/submit", 200)
 	if err != nil {
@@ -104,7 +106,7 @@ func (ac *AtCoder) ListLanguages() ([]Language, error) {
 	return list, nil
 }
 
-// FetchContest get specified contest's summary
+// FetchContest gets specified contest's summary
 func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 	resp, err := ac.client.DoGet(fmt.Sprintf("/contests/%s/tasks", id), 200)
 	if err != nil {
@@ -139,7 +141,7 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 	return contest, nil
 }
 
-// FetchSampleInout get a task's list of sample in/out pair
+// FetchSampleInout gets a task's list of sample in/out pair
 func (ac *AtCoder) FetchSampleInout(contestID, taskID string) (*[]Sample, error) {
 	resp, err := ac.client.DoGet(
 		fmt.Sprintf("/contests/%s/tasks/%s", contestID, taskID),
@@ -169,6 +171,8 @@ func (ac *AtCoder) FetchSampleInout(contestID, taskID string) (*[]Sample, error)
 	return &samples, nil
 }
 
+// Submit posts script body as task's answer, and returns latest submission
+// This method modifies task; add submission
 func (ac *AtCoder) Submit(task *Task, langID, body string) (*Submission, error) {
 	// post code
 
@@ -230,8 +234,42 @@ func (ac *AtCoder) Submit(task *Task, langID, body string) (*Submission, error) 
 		tds.Eq(6).Text(),
 		at,
 	)
-	task.AddSubmission(*submission)
-	return submission, nil
+	return task.AddSubmission(*submission), nil
+}
+
+// PollSubmissionStatus queries submission's status (judge)
+// It returns zero if judge is done, or returns polling interval if not
+// This method modified sub; writes judge, time, memory value
+func (ac *AtCoder) PollSubmissionStatus(sub *Submission) (int, error) {
+	path := fmt.Sprintf("/contests/%s/submissions/me/status/json", sub.Task.Contest.ID)
+	resp, err := ac.client.DoGetWithParam(path, 200, map[string]string{
+		"reload": "true",
+		"sids[]": strconv.Itoa(sub.ID),
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	defer resp.Body.Close()
+	bytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return 0, err
+	}
+	var judge Judge
+	if err := json.Unmarshal(bytes, &judge); err != nil {
+		return 0, err
+	}
+
+	detail := judge.Detail()
+	sub.Judge = detail.Result()
+	if detail.Time() != "" {
+		sub.Time, _ = strconv.Atoi(strings.Split(detail.Time(), " ")[0])
+	}
+	if detail.Memory() != "" {
+		sub.Memory, _ = strconv.Atoi(strings.Split(detail.Memory(), " ")[0])
+	}
+
+	return judge.Interval, nil
 }
 
 func extractFlash(cookies []*http.Cookie, key string) string {

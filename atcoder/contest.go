@@ -18,7 +18,8 @@ func NewContest(id, title, url string) *Contest {
 }
 
 // AddTask append task to its tasks
-func (c *Contest) AddTask(t Task) {
+func (c *Contest) AddTask(t Task) *Task {
 	t.Contest = c
 	c.Tasks = append(c.Tasks, &t)
+	return &t
 }

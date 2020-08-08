@@ -22,7 +22,8 @@ func NewTask(id string, label string, title string) *Task {
 }
 
 // AddSubmission append submission to its submissions
-func (t *Task) AddSubmission(s Submission) {
+func (t *Task) AddSubmission(s Submission) *Submission {
 	s.Task = t
 	t.Submissions = append(t.Submissions, s)
+	return &s
 }

@@ -69,7 +69,12 @@ func (c *Client) GetCookie() string {
 
 // DoGet sends GET request
 func (c *Client) DoGet(spath string, expect int) (*http.Response, error) {
-	resp, err := c.doRequest("GET", spath, nil, nil)
+	return c.DoGetWithParam(spath, expect, nil)
+}
+
+// DoGetWithParam sends GET request with query param
+func (c *Client) DoGetWithParam(spath string, expect int, params map[string]string) (*http.Response, error) {
+	resp, err := c.doRequest("GET", spath, nil, params, nil)
 	if err != nil {
 		return nil, errors.Wrapf(err, "request '[GET] %s' failed", spath)
 	}
@@ -93,7 +98,7 @@ func (c *Client) DoFormPost(spath string, expect int, params map[string]string) 
 		"Content-Type": "application/x-www-form-urlencoded",
 	}
 
-	resp, err := c.doRequest("POST", spath, headers, bodyReader)
+	resp, err := c.doRequest("POST", spath, headers, nil, bodyReader)
 	if err != nil {
 		return nil, errors.Wrapf(err, "request '[POST] /%s' failed", spath)
 	}
@@ -104,7 +109,7 @@ func (c *Client) DoFormPost(spath string, expect int, params map[string]string) 
 	return resp, nil
 }
 
-func (c *Client) doRequest(method, spath string, header map[string]string, body io.Reader) (*http.Response, error) {
+func (c *Client) doRequest(method, spath string, header map[string]string, query map[string]string, body io.Reader) (*http.Response, error) {
 	url := *c.endpoint
 	url.Path = path.Join(url.Path, spath)
 
@@ -112,6 +117,13 @@ func (c *Client) doRequest(method, spath string, header map[string]string, body 
 	if err != nil {
 		panic(err)
 	}
+
+	params := req.URL.Query()
+	for k, v := range query {
+		params.Add(k, v)
+	}
+	req.URL.RawQuery = params.Encode()
+
 	for k, v := range header {
 		req.Header.Add(k, v)
 	}
