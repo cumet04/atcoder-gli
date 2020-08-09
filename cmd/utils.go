@@ -11,15 +11,23 @@ import (
 
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 )
 
-func exitWithError(format string, a ...interface{}) {
+func cobraRun(f func(cmd *cobra.Command, args []string) int) func(cmd *cobra.Command, args []string) {
+	return func(cmd *cobra.Command, args []string) {
+		r := f(cmd, args)
+		os.Exit(r)
+	}
+}
+
+func writeError(format string, a ...interface{}) int {
 	if len(a) > 0 {
 		fmt.Fprintf(os.Stderr, format+"\n", a)
 	} else {
 		fmt.Fprintln(os.Stderr, format)
 	}
-	os.Exit(1)
+	return 1
 }
 
 func saveContestInfo(c atcoder.Contest, path string) error {

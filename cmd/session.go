@@ -12,20 +12,21 @@ func init() {
 		&cobra.Command{
 			Use:   "session",
 			Short: "check session is active or not",
-			Run:   runSession,
+			Run:   cobraRun(runSession),
 		})
 }
 
-func runSession(cmd *cobra.Command, args []string) {
+func runSession(cmd *cobra.Command, args []string) int {
 	ac := atcoder.NewAtCoder(cmd.Context(), session)
 	name, err := ac.CheckSession()
 	if err != nil {
-		exitWithError("%s", err)
+		return writeError("%s", err)
 	}
 
 	if name != "" {
 		fmt.Printf("You are logged in as %s\n", name)
 	} else {
-		exitWithError("You are not logged in to AtCoder")
+		return writeError("You are not logged in to AtCoder")
 	}
+	return 0
 }

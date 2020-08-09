@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -46,25 +47,26 @@ func (c *Config) WriteDefaultLanguage(langID string) error {
 
 // SkeletonFilePath resolves absolute path of skeleton file.
 // This regards SkeletonFile as relative path from CWD or config directory.
-func (c *Config) SkeletonFilePath() string {
+func (c *Config) SkeletonFilePath() (string, error) {
 	if c.SkeletonFile == "" {
-		return ""
+		return "", nil
 	}
 
 	if filepath.IsAbs(c.SkeletonFile) {
-		return c.SkeletonFile
+		return c.SkeletonFile, nil
 	}
 
 	file1 := pathAbs(filepath.Join(configDir(), c.SkeletonFile))
 	if _, err := os.Stat(file1); err == nil {
-		return file1
+		return file1, nil
 	}
 
 	file2 := pathAbs(filepath.Join(cwd(), c.SkeletonFile))
 	if _, err := os.Stat(file2); err == nil {
-		return file2
+		return file2, nil
 	}
 
-	exitWithError("skeleton_file is specified but the file is not found in %s, %s", file1, file2)
-	return "" // MEMO: this line is unreachable; The program exits with exitWithError
+	return "", errors.New(fmt.Sprintf(
+		"skeleton_file is specified but the file is not found in %s, %s", file1, file2,
+	))
 }

@@ -3,7 +3,6 @@ package cmd
 import (
 	"atcoder-gli/atcoder"
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -15,11 +14,11 @@ func init() {
 			Use:   "login [USERNAME] [PASSWORD]",
 			Short: "login to AtCoder",
 			Args:  cobra.MaximumNArgs(2),
-			Run:   runLogin,
+			Run:   cobraRun(runLogin),
 		})
 }
 
-func runLogin(cmd *cobra.Command, args []string) {
+func runLogin(cmd *cobra.Command, args []string) int {
 	var user string
 	var pass string
 	var err error
@@ -32,25 +31,25 @@ func runLogin(cmd *cobra.Command, args []string) {
 	if user == "" {
 		user, err = prompt("Username", false)
 		if err != nil {
-			exitWithError("Prompt username failed: %s", err)
+			return writeError("Prompt username failed: %s", err)
 		}
 	}
 	if pass == "" {
 		pass, err = prompt("Password", true)
 		if err != nil {
-			exitWithError("Prompt password failed: %s", err)
+			return writeError("Prompt password failed: %s", err)
 		}
 	}
 
 	ac := atcoder.NewAtCoder(cmd.Context(), "")
 	cookie, err := ac.Login(user, pass)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return
+		return writeError("%s", err)
 	}
 	if err = saveSession(cookie); err != nil {
 		panic(err)
 	}
 
 	fmt.Println("Login succeeded")
+	return 0
 }

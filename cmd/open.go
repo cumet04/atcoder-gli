@@ -12,22 +12,22 @@ func init() {
 		&cobra.Command{
 			Use:   "open [CONTEST_ID]",
 			Short: "open contest page with browser",
-			Run:   runOpen,
+			Run:   cobraRun(runOpen),
 			Args:  cobra.MaximumNArgs(1),
 		})
 }
 
-func runOpen(cmd *cobra.Command, args []string) {
+func runOpen(cmd *cobra.Command, args []string) int {
 	var url string
 	if len(args) > 0 {
 		url = path.Join("https://atcoder.jp/contests", args[0])
 	} else {
 		_, contest, err := readContestInfo("")
 		if err != nil {
-			exitWithError("Failed to read contest file: %s", err)
+			return writeError("Failed to read contest file: %s", err)
 		}
 		if contest == nil {
-			exitWithError(
+			return writeError(
 				"Cannot determin contest id.\n" +
 					"Specify contest id as command arg, or run command in contest directory.",
 			)
@@ -37,6 +37,7 @@ func runOpen(cmd *cobra.Command, args []string) {
 
 	err := browser.OpenURL(url)
 	if err != nil {
-		exitWithError("Cannot open browser: %s", err)
+		return writeError("Cannot open browser: %s", err)
 	}
+	return 0
 }

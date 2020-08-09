@@ -14,15 +14,15 @@ func init() {
 		&cobra.Command{
 			Use:   "lang",
 			Short: "select default submit language",
-			Run:   runLang,
+			Run:   cobraRun(runLang),
 		})
 }
 
-func runLang(cmd *cobra.Command, args []string) {
+func runLang(cmd *cobra.Command, args []string) int {
 	ac := atcoder.NewAtCoder(cmd.Context(), session)
 	all, err := ac.ListLanguages()
 	if err != nil {
-		exitWithError("Failed to fetch list of languages", err)
+		return writeError("Failed to fetch list of languages", err)
 	}
 
 	q, _ := prompt("Search", false)
@@ -39,11 +39,12 @@ func runLang(cmd *cobra.Command, args []string) {
 	}
 	index, _, err := prompt.Run()
 	if err != nil {
-		exitWithError("Failed to choose language: %s", err)
+		return writeError("Failed to choose language: %s", err)
 	}
 
 	if err := config.WriteDefaultLanguage(list[index].ID); err != nil {
-		exitWithError("Failed to write default language to config file")
+		return writeError("Failed to write default language to config file")
 	}
 	fmt.Printf("Set default language as %s (%s)\n", list[index].Label, list[index].ID)
+	return 0
 }

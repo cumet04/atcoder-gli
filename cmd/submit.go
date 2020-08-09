@@ -14,21 +14,21 @@ import (
 func init() {
 	cmd := &cobra.Command{
 		Use:   "submit [FILE]",
-		Short: "submit file to a problem",
-		Run:   runSubmit,
+		Short: "submit file to a task",
+		Run:   cobraRun(runSubmit),
 		Args:  cobra.MaximumNArgs(1),
 	}
 	cmd.Flags().Bool("nowait", false, "exit without waiting for judge complete")
 	rootCmd.AddCommand(cmd)
 }
 
-func runSubmit(cmd *cobra.Command, args []string) {
+func runSubmit(cmd *cobra.Command, args []string) int {
 	configFile, contest, err := readContestInfo("")
 	if err != nil {
-		exitWithError("Failed to read contest file: %s", err)
+		return writeError("Failed to read contest file: %s", err)
 	}
 	if contest == nil {
-		exitWithError(
+		return writeError(
 			"Cannot determin current contest.\n" +
 				"Run command under contest directory.",
 		)
@@ -50,7 +50,7 @@ func runSubmit(cmd *cobra.Command, args []string) {
 		}
 	}
 	if task == nil {
-		exitWithError(
+		return writeError(
 			"Cannot determin target task.\n" +
 				"Run command in task's directory, or " +
 				"specify target file which is located in task directory.",
@@ -59,28 +59,30 @@ func runSubmit(cmd *cobra.Command, args []string) {
 
 	lang := config.DefaultLanguage
 	if lang == "" {
-		exitWithError("Default language is not set.\n" +
+		return writeError("Default language is not set.\n" +
 			"Retry this after set it with `lang` command.")
 	}
 
 	bytes, err := ioutil.ReadFile(filepath.Join(scriptDir, task.Script))
 	if err != nil {
-		exitWithError("Failed to read script file: %s", err)
+		return writeError("Failed to read script file: %s", err)
 	}
 
 	ac := atcoder.NewAtCoder(cmd.Context(), session)
 	submission, err := ac.Submit(task, lang, string(bytes))
 	if err != nil {
-		exitWithError("Failed to submit: %s", err)
+		return writeError("Failed to submit: %s", err)
 	}
 
 	fmt.Println("Code is submitted.")
 	if b, _ := cmd.Flags().GetBool("nowait"); !b {
 		if err := waitForJudge(ac, submission); err != nil {
-			exitWithError("Error on waiting judge: %s", err)
+			return writeError("Error on waiting judge: %s", err)
 		}
 	}
 	fmt.Printf("See: https://atcoder.jp/contests/%s/submissions/%d\n", contest.ID, submission.ID)
+
+	return 0
 }
 
 func waitForJudge(ac *atcoder.AtCoder, s *atcoder.Submission) error {
