@@ -3,16 +3,24 @@ package cmd
 import (
 	"atcoder-gli/atcoder"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 func init() {
+	usage := `
+Login to AtCoder with USERNAME and PASSWORD.
+USERNAME and PASSWORD are optional, and they are prompted if omitted.
+Some actions (ex. 'acg submit') require login beforehand, so you need to login with this command.
+
+See also 'acg help session' for current login status.
+`
 	rootCmd.AddCommand(
 		&cobra.Command{
-			// TODO: argsの説明（省略したらプロンプトになるなど）を入れたい
 			Use:   "login [USERNAME] [PASSWORD]",
-			Short: "login to AtCoder",
+			Short: "Login to AtCoder",
+			Long:  strings.TrimSpace(usage),
 			Args:  cobra.MaximumNArgs(2),
 			Run:   cobraRun(runLogin),
 		})

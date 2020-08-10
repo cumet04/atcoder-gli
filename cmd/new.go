@@ -14,11 +14,29 @@ import (
 )
 
 func init() {
+	usage := `
+Create new directory for CONTEST_ID and setup directories/files.
+Fetch contest info from AtCoder website and download sample test cases for tasks.
+
+For instance, create directory tree is:
+abc100/
+- .contest.json
++ a/
+  - main.go // if skeleton_file is set in config
+  + samples/
+    - sample_1.in
+    - sample_1.out
+    - sample_2.in
+    - sample_2.out
++ b/ ...
++ c/ ...
+...
+`
 	rootCmd.AddCommand(
 		&cobra.Command{
 			Use:   "new CONTEST_ID",
-			Short: "create files for a contest",
-			Long:  "create new directories & files for a specified contest",
+			Short: "Create and setup new directory for a contest",
+			Long:  strings.TrimSpace(usage),
 			Run:   cobraRun(runNew),
 			Args:  cobra.ExactArgs(1),
 		})
@@ -83,6 +101,7 @@ func runNew(cmd *cobra.Command, args []string) int {
 	return 0
 }
 
+// cp src dst
 func copyFile(src, dst string) error {
 	stat, err := os.Stat(src)
 	if err != nil {

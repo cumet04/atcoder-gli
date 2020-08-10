@@ -3,15 +3,23 @@ package cmd
 import (
 	"atcoder-gli/atcoder"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 func init() {
+	usage := `
+Check whether current login session is alive or not.
+If session is alive, it show login user's username.
+
+See also 'acg help login'.
+`
 	rootCmd.AddCommand(
 		&cobra.Command{
 			Use:   "session",
-			Short: "check session is active or not",
+			Short: "Check login session status",
+			Long:  strings.TrimSpace(usage),
 			Run:   cobraRun(runSession),
 		})
 }

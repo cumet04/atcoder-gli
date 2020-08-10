@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gosuri/uilive"
@@ -12,10 +13,22 @@ import (
 )
 
 func init() {
+	usage := `
+Submit a FILE as answer for a task, and wait the judge is complete.
+If FILE is omitted, it looks for a file named config's skeleton_file name, in current directory.
+Target task is guessed from directory where FILE is in.
+
+ex 1. FILE = abc100/c/main.go
+-> submit abc100/c/main.go for abc100's c task
+
+ex 2. FILE is none, run in abc100/b, skeleton_file = main.rb
+-> submit abc100/b/main.rb for abc100's b task
+`
 	cmd := &cobra.Command{
 		Use:   "submit [FILE]",
-		Short: "submit file to a task",
+		Short: "Submit file to a task",
 		Run:   cobraRun(runSubmit),
+		Long:  strings.TrimSpace(usage),
 		Args:  cobra.MaximumNArgs(1),
 	}
 	cmd.Flags().Bool("nowait", false, "exit without waiting for judge complete")
