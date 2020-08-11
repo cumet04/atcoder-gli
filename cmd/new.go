@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"atcoder-gli/atcoder"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -99,6 +100,20 @@ func runNew(cmd *cobra.Command, args []string) int {
 
 	fmt.Printf("Directory for %s is ready.\n", id)
 	return 0
+}
+
+func saveContestInfo(c atcoder.Contest, path string) error {
+	b, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	filename := filepath.Join(path, ".contest.json")
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	file.Write(b)
+	return nil
 }
 
 // cp src dst

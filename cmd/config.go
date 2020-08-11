@@ -16,8 +16,9 @@ type Config struct {
 	DefaultLanguage string       `mapstructure:"default_language"` // language id
 }
 
-// NewConfig creates Config instance from config file with viper
-func NewConfig(path string) *Config {
+// NewConfig creates Config instance with viper
+// if read is true, load values from config file (else values are default)
+func NewConfig(path string, read bool) *Config {
 	v := viper.New()
 	v.SetConfigName("config")
 	v.SetConfigType("yml")
@@ -28,21 +29,28 @@ func NewConfig(path string) *Config {
 	v.SetDefault("default_language", "")
 
 	var c Config
-	v.ReadInConfig()
+	if read {
+		v.ReadInConfig()
+	}
 	v.Unmarshal(&c)
 
 	c.viper = v
 	return &c
 }
 
-// WriteDefaultLanguage set id to default language, and save it to file
-func (c *Config) WriteDefaultLanguage(langID string) error {
+// SaveConfig write config to default config path
+func (c *Config) SaveConfig() error {
 	if err := os.MkdirAll(configDir(), 0755); err != nil {
 		return errors.Wrapf(err, "Cannot create config directory: %s", configDir())
 	}
+	return c.viper.WriteConfigAs(filepath.Join(configDir(), "config.yml"))
+}
+
+// WriteDefaultLanguage set id to default language, and save it to file
+func (c *Config) WriteDefaultLanguage(langID string) error {
 	c.DefaultLanguage = langID
 	c.viper.Set("default_language", langID)
-	return c.viper.WriteConfigAs(filepath.Join(configDir(), "config.yml"))
+	return c.SaveConfig()
 }
 
 // SkeletonFilePath resolves absolute path of skeleton file.

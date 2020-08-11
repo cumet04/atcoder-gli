@@ -1,10 +1,14 @@
 package cmd
 
 import (
+	"atcoder-gli/atcoder"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
+	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -30,13 +34,83 @@ func init() {
 }
 
 func initConfig() {
-	config = *NewConfig(configDir())
+	config = *NewConfig(configDir(), true)
 
 	var err error
-	session, err = readSession()
-	if err != nil {
+	file := filepath.Join(configDir(), "session")
+	b, err := ioutil.ReadFile(file)
+	if err == nil {
+		session = string(b)
+	} else {
 		session = ""
 	}
+}
+
+func cobraRun(f func(cmd *cobra.Command, args []string) int) func(cmd *cobra.Command, args []string) {
+	return func(cmd *cobra.Command, args []string) {
+		r := f(cmd, args)
+		os.Exit(r)
+	}
+}
+
+func writeError(format string, a ...interface{}) int {
+	if len(a) > 0 {
+		fmt.Fprintf(os.Stderr, format+"\n", a)
+	} else {
+		fmt.Fprintln(os.Stderr, format)
+	}
+	return 1
+}
+
+func readContestInfo(basepath string) (string, *atcoder.Contest, error) {
+	search := []string{
+		basepath,
+		filepath.Join(basepath, ".."),
+		filepath.Join(basepath, "..", ".."),
+	}
+	for _, dir := range search {
+		file := pathAbs(filepath.Join(dir, ".contest.json"))
+		if _, err := os.Stat(file); err != nil {
+			continue
+		}
+
+		b, err := ioutil.ReadFile(file)
+		if err != nil {
+			return "", nil, err
+		}
+		var contest atcoder.Contest
+		if err := json.Unmarshal(b, &contest); err != nil {
+			return "", nil, errors.Wrap(err, "Cannot parse contest info")
+		}
+		for _, task := range contest.Tasks {
+			task.Contest = &contest
+		}
+		return file, &contest, nil
+	}
+	return "", nil, nil
+}
+
+func prompt(label string, mask bool) (string, error) {
+	var m rune
+	if mask {
+		m = '*'
+	}
+	prompt := promptui.Prompt{
+		Label: label,
+		Mask:  m,
+		Validate: func(input string) error {
+			if len(input) == 0 {
+				return errors.New("Empty input")
+			}
+			return nil
+		},
+	}
+
+	result, err := prompt.Run()
+	if err != nil {
+		panic(err)
+	}
+	return result, nil
 }
 
 func configDir() string {
@@ -47,30 +121,18 @@ func configDir() string {
 	return filepath.Join(confdir, "atcoder-gli")
 }
 
-func readSession() (string, error) {
-	file := filepath.Join(configDir(), "session")
-	b, err := ioutil.ReadFile(file)
+func cwd() string {
+	cwd, err := os.Getwd()
 	if err != nil {
-		return "", err
+		panic(err)
 	}
-	return string(b), nil
+	return cwd
 }
 
-func saveSession(cookie string) error {
-	if err := os.MkdirAll(configDir(), 0755); err != nil {
-		return errors.Wrapf(err, "Cannot create session directory: %s", configDir())
-	}
-
-	filename := filepath.Join(configDir(), "session")
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+func pathAbs(path string) string {
+	file, err := filepath.Abs(path)
 	if err != nil {
-		return errors.Wrapf(err, "Cannot initialize session file: %s", filename)
+		panic(err)
 	}
-
-	_, err = file.WriteString(cookie)
-	if err != nil {
-		return errors.Wrapf(err, "Cannot write session to file")
-	}
-
-	return nil
+	return file
 }

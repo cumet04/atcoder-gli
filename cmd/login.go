@@ -3,8 +3,11 @@ package cmd
 import (
 	"atcoder-gli/atcoder"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -55,9 +58,28 @@ func runLogin(cmd *cobra.Command, args []string) int {
 		return writeError("%s", err)
 	}
 	if err = saveSession(cookie); err != nil {
-		panic(err)
+		return writeError("Failed to save session: %s", err)
 	}
 
 	fmt.Println("Login succeeded")
 	return 0
+}
+
+func saveSession(cookie string) error {
+	if err := os.MkdirAll(configDir(), 0755); err != nil {
+		return errors.Wrapf(err, "Cannot create session directory: %s", configDir())
+	}
+
+	filename := filepath.Join(configDir(), "session")
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return errors.Wrapf(err, "Cannot initialize session file: %s", filename)
+	}
+
+	_, err = file.WriteString(cookie)
+	if err != nil {
+		return errors.Wrapf(err, "Cannot write session to file")
+	}
+
+	return nil
 }
