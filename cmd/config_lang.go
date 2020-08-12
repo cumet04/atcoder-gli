@@ -43,7 +43,7 @@ func runLang(cmd *cobra.Command, args []string) int {
 	}
 
 	prompt := promptui.Select{
-		Label: "Default Language",
+		Label: "Language",
 		Items: list,
 	}
 	index, _, err := prompt.Run()
@@ -51,9 +51,9 @@ func runLang(cmd *cobra.Command, args []string) int {
 		return writeError("Failed to choose language: %s", err)
 	}
 
-	if err := config.WriteDefaultLanguage(list[index].ID); err != nil {
-		return writeError("Failed to write default language to config file")
+	if err := config.WriteLanguage(list[index].ID); err != nil {
+		return writeError("Failed to write language to config file")
 	}
-	fmt.Printf("Set default language as %s (%s)\n", list[index].Label, list[index].ID)
+	fmt.Printf("Set language as %s (%s)\n", list[index].Label, list[index].ID)
 	return 0
 }

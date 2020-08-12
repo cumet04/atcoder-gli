@@ -64,7 +64,7 @@ func runNew(cmd *cobra.Command, args []string) int {
 	for _, t := range contest.Tasks {
 		taskDir := strings.ToLower(t.Label)
 		taskPath := filepath.Join(contestDir, taskDir)
-		samplePath := filepath.Join(taskPath, config.SampleDir)
+		samplePath := filepath.Join(taskPath, config.SampleDir())
 		if err := os.MkdirAll(samplePath, 0755); err != nil {
 			return writeError("Failed to create sample directory: %s", err)
 		}

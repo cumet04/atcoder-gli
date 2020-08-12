@@ -24,6 +24,11 @@ Usage:
 
 Flags:
   -h, --help   help for login
+
+Global Flags:
+      --language string        language id used as submit code's language
+      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
+      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### new
@@ -50,9 +55,40 @@ Usage:
 
 Flags:
   -h, --help   help for new
+
+Global Flags:
+      --language string        language id used as submit code's language
+      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
+      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
-#### lang
+#### config
+```
+Show/Write config values from/to config file.
+Run with some config options, it write the value to file.
+If you run this without any options and config file, new config file is created with default values.
+
+See 'Global Flags' for available config options.
+
+Usage:
+  acg config [flags]
+  acg config [command]
+
+Available Commands:
+  lang        Select preferred language for submit
+
+Flags:
+  -h, --help   help for config
+
+Global Flags:
+      --language string        language id used as submit code's language
+      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
+      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+
+Use "acg config [command] --help" for more information about a command.
+```
+
+#### config lang
 ```
 Search and select preferred language.
 Selected language is saved in config and used when submit code.
@@ -62,10 +98,15 @@ Search targets are all available languages in AtCoder,
 and keyword is case-insensitive.
 
 Usage:
-  acg lang [flags]
+  acg config lang [flags]
 
 Flags:
   -h, --help   help for lang
+
+Global Flags:
+      --language string        language id used as submit code's language
+      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
+      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### submit
@@ -73,6 +114,7 @@ Flags:
 Submit a FILE as answer for a task, and wait the judge is complete.
 If FILE is omitted, it looks for a file named config's skeleton_file name, in current directory.
 Target task is guessed from directory where FILE is in.
+Language is read from config value: 'language'.
 
 ex 1. FILE = abc100/c/main.go
 -> submit abc100/c/main.go for abc100's c task
@@ -86,6 +128,11 @@ Usage:
 Flags:
   -h, --help     help for submit
       --nowait   exit without waiting for judge complete
+
+Global Flags:
+      --language string        language id used as submit code's language
+      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
+      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### session
@@ -100,6 +147,11 @@ Usage:
 
 Flags:
   -h, --help   help for session
+
+Global Flags:
+      --language string        language id used as submit code's language
+      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
+      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### open
@@ -114,6 +166,11 @@ Usage:
 
 Flags:
   -h, --help   help for open
+
+Global Flags:
+      --language string        language id used as submit code's language
+      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
+      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### show
@@ -131,4 +188,9 @@ Usage:
 
 Flags:
   -h, --help   help for show
+
+Global Flags:
+      --language string        language id used as submit code's language
+      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
+      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```

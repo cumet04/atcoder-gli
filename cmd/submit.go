@@ -17,6 +17,7 @@ func init() {
 Submit a FILE as answer for a task, and wait the judge is complete.
 If FILE is omitted, it looks for a file named config's skeleton_file name, in current directory.
 Target task is guessed from directory where FILE is in.
+Language is read from config value: 'language'.
 
 ex 1. FILE = abc100/c/main.go
 -> submit abc100/c/main.go for abc100's c task
@@ -70,7 +71,7 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 		)
 	}
 
-	lang := config.DefaultLanguage
+	lang := config.Language()
 	if lang == "" {
 		return writeError("Default language is not set.\n" +
 			"Retry this after set it with `lang` command.")

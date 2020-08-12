@@ -31,11 +31,10 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	config = *NewConfig(configDir(), rootCmd)
 }
 
 func initConfig() {
-	config = *NewConfig(configDir(), true)
-
 	var err error
 	file := filepath.Join(configDir(), "session")
 	b, err := ioutil.ReadFile(file)

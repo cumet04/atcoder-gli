@@ -6,7 +6,8 @@ echo "### Usage"
 for cmd in \
   login \
   new \
-  lang \
+  config \
+  "config lang" \
   submit \
   session \
   open \
