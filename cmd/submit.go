@@ -14,23 +14,19 @@ import (
 
 func init() {
 	usage := `
-Submit a FILE as answer for a task, and wait the judge is complete.
-If FILE is omitted, it looks for a file named config's skeleton_file name, in current directory.
-Target task is guessed from directory where FILE is in.
+Submit a file as answer for a task, and wait the judge is complete.
+Target file is determined by looking for a file named config's skeleton_file name, in current directory.
+Target task is guessed from current directory.
 Language is read from config value: 'language'.
 
-ex 1. FILE = abc100/c/main.go
--> submit abc100/c/main.go for abc100's c task
-
-ex 2. FILE is none, run in abc100/b, skeleton_file = main.rb
+ex 1. run in abc100/b, skeleton_file = main.rb
 -> submit abc100/b/main.rb for abc100's b task
 `
 	cmd := &cobra.Command{
-		Use:   "submit [FILE]",
+		Use:   "submit",
 		Short: "Submit file to a task",
 		Run:   cobraRun(runSubmit),
 		Long:  strings.TrimSpace(usage),
-		Args:  cobra.MaximumNArgs(1),
 	}
 	cmd.Flags().Bool("nowait", false, "exit without waiting for judge complete")
 	rootCmd.AddCommand(cmd)
@@ -49,13 +45,7 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 	}
 	basedir := filepath.Dir(configFile)
 
-	var scriptDir string
-	if len(args) > 0 {
-		// TODO: ファイル直指定されそうなのでコメントなり分岐なり
-		scriptDir = pathAbs(args[0])
-	} else {
-		scriptDir = cwd()
-	}
+	scriptDir := cwd()
 	var task *atcoder.Task
 	for _, t := range contest.Tasks {
 		d := pathAbs(filepath.Join(basedir, t.Directory))
@@ -66,15 +56,14 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 	if task == nil {
 		return writeError(
 			"Cannot determin target task.\n" +
-				"Run command in task's directory, or " +
-				"specify target file which is located in task directory.",
+				"Run command in task's directory.",
 		)
 	}
 
 	lang := config.Language()
 	if lang == "" {
 		return writeError("Default language is not set.\n" +
-			"Retry this after set it with `lang` command.")
+			"Retry this after set it with `config lang` command.")
 	}
 
 	bytes, err := ioutil.ReadFile(filepath.Join(scriptDir, task.Script))
