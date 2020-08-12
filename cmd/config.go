@@ -38,6 +38,7 @@ func runConfig(cmd *cobra.Command, args []string) int {
 	return 0
 }
 
+// Config is interface to config data / viper
 type Config struct {
 	viper *viper.Viper
 }

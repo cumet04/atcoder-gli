@@ -8,7 +8,7 @@ type Task struct {
 	Title       string       // task's Title (ex. "Happy Birthday!")
 	Directory   string       // on local storage, task's directory relative path from contest directory
 	Script      string       // on local storage, script file name for the task
-	Submissions []Submission // submissions that belongs to the task
+	Submissions []Submission `json:"-"` // submissions that belongs to the task
 }
 
 // NewTask creates a instance of Task
