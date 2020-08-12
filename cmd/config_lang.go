@@ -18,7 +18,7 @@ You can search language with keyword (prompted) and choose one from them.
 Search targets are all available languages in AtCoder,
 and keyword is case-insensitive.
 `
-	rootCmd.AddCommand(
+	configCmd.AddCommand(
 		&cobra.Command{
 			Use:   "lang",
 			Short: "Select preferred language for submit",

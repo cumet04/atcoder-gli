@@ -6,7 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
@@ -14,6 +16,28 @@ type Config struct {
 	SampleDir       string       `mapstructure:"sample_dir"`
 	SkeletonFile    string       `mapstructure:"skeleton_file"`
 	DefaultLanguage string       `mapstructure:"default_language"` // language id
+}
+
+var configCmd = &cobra.Command{
+	Use:   "config",
+	Short: "[WIP] config utility",
+	Run:   cobraRun(runConfig),
+}
+
+func init() {
+	// 	usage := `
+	// Show/Write config values from/to config file.
+	// Without any options it shows current values, or with config options it write the value to file.
+
+	// See 'acg help' for available config options.
+	// `
+	// 	configCmd.Long = strings.TrimSpace(usage)
+	rootCmd.AddCommand(configCmd)
+}
+
+func runConfig(cmd *cobra.Command, args []string) int {
+	fmt.Println(config)
+	return 0
 }
 
 // NewConfig creates Config instance with viper
@@ -36,6 +60,15 @@ func NewConfig(path string, read bool) *Config {
 
 	c.viper = v
 	return &c
+}
+
+func (c Config) String() string {
+	s := c.viper.AllSettings()
+	bs, err := yaml.Marshal(s)
+	if err != nil {
+		panic(err)
+	}
+	return string(bs)
 }
 
 // SaveConfig write config to default config path
