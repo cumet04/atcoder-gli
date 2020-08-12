@@ -45,7 +45,7 @@ type Config struct {
 func configDefinition() []map[string]string {
 	yml := `
 - name: sample_dir
-  default: samples
+  default: tests
   usage: directory name where sample in/out files are stored in
 - name: skeleton_file
   default: ""
