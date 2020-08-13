@@ -69,6 +69,7 @@ func runNew(cmd *cobra.Command, args []string) int {
 			return writeError("Failed to create sample directory: %s", err)
 		}
 		t.Directory = taskDir
+		t.SampleDir = config.SampleDir()
 
 		skel, err := config.SkeletonFilePath()
 		if err != nil {

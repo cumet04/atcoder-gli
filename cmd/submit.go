@@ -33,32 +33,11 @@ ex 1. run in abc100/b, skeleton_file = main.rb
 }
 
 func runSubmit(cmd *cobra.Command, args []string) int {
-	configFile, contest, err := readContestInfo("")
-	if err != nil {
-		return writeError("Failed to read contest file: %s", err)
+	task, ret := runDeterminTask()
+	if ret != 0 {
+		return ret
 	}
-	if contest == nil {
-		return writeError(
-			"Cannot determin current contest.\n" +
-				"Run command under contest directory.",
-		)
-	}
-	basedir := filepath.Dir(configFile)
-
-	scriptDir := cwd()
-	var task *atcoder.Task
-	for _, t := range contest.Tasks {
-		d := pathAbs(filepath.Join(basedir, t.Directory))
-		if d == scriptDir {
-			task = t
-		}
-	}
-	if task == nil {
-		return writeError(
-			"Cannot determin target task.\n" +
-				"Run command in task's directory.",
-		)
-	}
+	contest := task.Contest
 
 	lang := config.Language()
 	if lang == "" {
@@ -66,7 +45,7 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 			"Retry this after set it with `config lang` command.")
 	}
 
-	bytes, err := ioutil.ReadFile(filepath.Join(scriptDir, task.Script))
+	bytes, err := ioutil.ReadFile(filepath.Join(cwd(), task.Script))
 	if err != nil {
 		return writeError("Failed to read script file: %s", err)
 	}
@@ -86,6 +65,37 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 	fmt.Printf("See: https://atcoder.jp/contests/%s/submissions/%d\n", contest.ID, submission.ID)
 
 	return 0
+}
+
+func runDeterminTask() (*atcoder.Task, int) {
+	configFile, contest, err := readContestInfo("")
+	if err != nil {
+		return nil, writeError("Failed to read contest file: %s", err)
+	}
+	if contest == nil {
+		return nil, writeError(
+			"Cannot determin current contest.\n" +
+				"Run command under contest directory.",
+		)
+	}
+	basedir := filepath.Dir(configFile)
+
+	scriptDir := cwd()
+	var task *atcoder.Task
+	for _, t := range contest.Tasks {
+		d := pathAbs(filepath.Join(basedir, t.Directory))
+		if d == scriptDir {
+			task = t
+		}
+	}
+	if task == nil {
+		return nil, writeError(
+			"Cannot determin target task.\n" +
+				"Run command in task's directory.",
+		)
+	}
+
+	return task, 0
 }
 
 func waitForJudge(ac *atcoder.AtCoder, s *atcoder.Submission) error {

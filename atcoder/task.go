@@ -8,6 +8,7 @@ type Task struct {
 	Title       string       // task's Title (ex. "Happy Birthday!")
 	Directory   string       // on local storage, task's directory relative path from contest directory
 	Script      string       // on local storage, script file name for the task
+	SampleDir   string       // on local storage, sample directory relative path from task directory; config.sample_dir at 'acg new'
 	Submissions []Submission `json:"-"` // submissions that belongs to the task
 }
 
