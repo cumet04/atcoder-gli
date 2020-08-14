@@ -54,6 +54,9 @@ func configDefinition() []map[string]string {
 - name: language
   default: ""
   usage: language id used as submit code's language
+- name: command
+  default: "./{{.ScriptFile}}"
+  usage: "command template that runs in 'acg test'"
 `
 	var m []map[string]string
 	if err := yaml.Unmarshal([]byte(yml), &m); err != nil {
@@ -95,6 +98,11 @@ func (c *Config) SkeletonFile() string {
 // Language returns current language value of config
 func (c *Config) Language() string {
 	return c.viper.GetString("language")
+}
+
+// Command returns command value of config
+func (c *Config) Command() string {
+	return c.viper.GetString("command")
 }
 
 // WriteLanguage set id to language, and save it to file

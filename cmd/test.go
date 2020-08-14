@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"atcoder-gli/atcoder"
 	"bytes"
 	"context"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -34,6 +36,10 @@ ex 1. run in abc100/b, skeleton_file = main.rb
 	rootCmd.AddCommand(cmd)
 }
 
+type commandEnv struct {
+	ScriptFile string
+}
+
 func runTest(cmd *cobra.Command, args []string) int {
 	task, ret := runDeterminTask()
 	if ret != 0 {
@@ -44,7 +50,7 @@ func runTest(cmd *cobra.Command, args []string) int {
 	sampleDir := filepath.Join(cwd(), task.SampleDir)
 	files, err := ioutil.ReadDir(sampleDir)
 	if err != nil {
-		panic(err) // TODO
+		return writeError("Cannot read sample dir: %s", err)
 	}
 	names := []string{}
 	for _, file := range files {
@@ -58,6 +64,21 @@ func runTest(cmd *cobra.Command, args []string) int {
 		}
 	}
 
+	// generate command string from template
+	cenv := commandEnv{
+		ScriptFile: config.SkeletonFile(),
+	}
+	tmpl, err := template.New("command").Parse(config.Command())
+	if err != nil {
+		return writeError("Command template is not parsable: %s", err)
+	}
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, cenv); err != nil {
+		return writeError("Cannot construct command from template: %s", err)
+	}
+	command := buf.String()
+
+	// run test for samples
 	for _, name := range names {
 		full := filepath.Join(sampleDir, name)
 		infile := full + ".in"
@@ -68,8 +89,7 @@ func runTest(cmd *cobra.Command, args []string) int {
 
 		// TODO: 適当に色つけたい
 		fmt.Printf("### %s\n", name)
-		// TODO: command
-		ok, status, err := execTestRun(cmd.Context(), "echo -n Yes", infile, outfile)
+		ok, status, err := execTestRun(cmd.Context(), command, infile, outfile)
 		if err != nil {
 			return writeError("Command execution is failed: %s", err)
 		}
@@ -114,6 +134,6 @@ func execTestRun(ctx context.Context, command, infile, outfile string) (bool, in
 		return false, 1, errors.Wrap(err, "Failed to start command")
 	}
 
-	actual := buf.Bytes()
-	return bytes.Compare(expected, actual) == 0, cmd.ProcessState.ExitCode(), nil
+	actual := string(buf.Bytes())
+	return atcoder.Judge(actual, string(expected)), cmd.ProcessState.ExitCode(), nil
 }
