@@ -255,7 +255,7 @@ func (ac *AtCoder) PollSubmissionStatus(sub *Submission) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	var judge Judge
+	var judge JudgeStatus
 	if err := json.Unmarshal(bytes, &judge); err != nil {
 		return 0, err
 	}

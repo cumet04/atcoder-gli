@@ -7,15 +7,15 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// A Judge represents AtCoder's judge polling API's json format
-type Judge struct {
+// A JudgeStatus represents AtCoder's judge polling API's json format
+type JudgeStatus struct {
 	Interval int                    `json:"Interval"` // [ms]
 	Result   map[string]JudgeDetail `json:"Result"`
 }
 
 // Detail returns first judgeDetail
 // In this app's usecase, a Judge must have just one judgeDetail
-func (j *Judge) Detail() *JudgeDetail {
+func (j *JudgeStatus) Detail() *JudgeDetail {
 	for _, d := range j.Result {
 		return &d
 	}
