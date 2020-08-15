@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/gosuri/uilive"
+	"github.com/logrusorgru/aurora/v3"
+	"github.com/mattn/go-colorable"
 	"github.com/spf13/cobra"
 )
 
@@ -107,6 +109,7 @@ func runDeterminTask() (*atcoder.Task, int) {
 
 func waitForJudge(ac *atcoder.AtCoder, s *atcoder.Submission) error {
 	writer := uilive.New()
+	writer.Out = colorable.NewColorableStdout()
 	writer.Start()
 	defer writer.Stop()
 
@@ -125,7 +128,18 @@ func waitForJudge(ac *atcoder.AtCoder, s *atcoder.Submission) error {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Fprintf(writer, "Judge: %s\n", s.Judge)
+		switch s.Judge {
+		case "AC":
+			fmt.Fprintf(writer, "Judge: %s\n", aurora.Green("AC"))
+		case "WA":
+			fmt.Fprintf(writer, "Judge: %s\n", aurora.Red("WA"))
+		default:
+			if strings.Contains(s.Judge, "/") {
+				fmt.Fprintf(writer, "Judge: %s\n", s.Judge)
+			} else {
+				fmt.Fprintf(writer, "Judge: %s\n", aurora.Yellow(s.Judge))
+			}
+		}
 
 		if interval == 0 {
 			break

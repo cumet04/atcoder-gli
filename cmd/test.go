@@ -12,6 +12,8 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/logrusorgru/aurora/v3"
+	"github.com/mattn/go-colorable"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -108,7 +110,6 @@ func runTest(cmd *cobra.Command, args []string) int {
 			return writeError("Output file corresponding %s is not found: %s", name+".in", outfile)
 		}
 
-		// TODO: 適当に色つけたい
 		fmt.Printf("* %s ... ", name)
 		result, err := execTestRun(cmd.Context(), command, infile, outfile)
 		if err != nil {
@@ -121,9 +122,9 @@ func runTest(cmd *cobra.Command, args []string) int {
 
 		switch result.Judge {
 		case "AC":
-			fmt.Println("AC")
+			fmt.Fprintln(colorable.NewColorableStdout(), aurora.Green("AC"))
 		case "WA":
-			fmt.Println("WA")
+			fmt.Fprintln(colorable.NewColorableStdout(), aurora.Red("WA"))
 			fmt.Println("expected output:")
 			expected, err := ioutil.ReadFile(outfile)
 			if err != nil {
@@ -131,7 +132,8 @@ func runTest(cmd *cobra.Command, args []string) int {
 			}
 			fmt.Println(string(expected))
 		case "RE":
-			fmt.Printf("RE with status code = %d\n", result.Status)
+			fmt.Fprint(colorable.NewColorableStdout(), aurora.Yellow("RE"))
+			fmt.Printf(", with status code = %d\n", result.Status)
 			fmt.Println(result.Output)
 		}
 	}
