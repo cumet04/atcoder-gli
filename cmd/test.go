@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -41,6 +40,12 @@ ex 1. run in abc100/b, skeleton_file = main.rb
 
 type commandEnv struct {
 	ScriptFile string
+}
+
+type testResult struct {
+	Judge  string
+	Output string
+	Status int
 }
 
 func runTest(cmd *cobra.Command, args []string) int {
@@ -104,57 +109,68 @@ func runTest(cmd *cobra.Command, args []string) int {
 		}
 
 		// TODO: 適当に色つけたい
-		fmt.Printf("### %s\n", name)
-		ok, status, err := execTestRun(cmd.Context(), command, infile, outfile)
+		fmt.Printf("* %s ... ", name)
+		result, err := execTestRun(cmd.Context(), command, infile, outfile)
 		if err != nil {
 			return writeError("Command execution is failed: %s", err)
 		}
-		fmt.Println("") // write \n for actual output without trailing \n
 
 		if justrun {
 			continue
 		}
 
-		if status != 0 {
-			fmt.Printf("=> RE; status code = %d\n", status)
-		} else if ok {
-			fmt.Println("=> AC")
-		} else {
-			fmt.Println("=> WA")
+		switch result.Judge {
+		case "AC":
+			fmt.Println("AC")
+		case "WA":
+			fmt.Println("WA")
 			fmt.Println("expected output:")
 			expected, err := ioutil.ReadFile(outfile)
 			if err != nil {
 				return writeError("Failed to read out-file: %s", err)
 			}
 			fmt.Println(string(expected))
+		case "RE":
+			fmt.Printf("RE with status code = %d\n", result.Status)
+			fmt.Println(result.Output)
 		}
-		fmt.Println("")
 	}
 
 	return 0
 }
 
-func execTestRun(ctx context.Context, command, infile, outfile string) (bool, int, error) {
+func execTestRun(ctx context.Context, command, infile, outfile string) (*testResult, error) {
 	in, err := os.Open(infile)
 	if err != nil {
-		return false, -1, errors.Wrap(err, "Failed to read in-file")
+		return nil, errors.Wrap(err, "Failed to read in-file")
 	}
 	expected, err := ioutil.ReadFile(outfile)
 	if err != nil {
-		return false, -1, errors.Wrap(err, "Failed to read out-file")
+		return nil, errors.Wrap(err, "Failed to read out-file")
 	}
 
-	var buf bytes.Buffer
 	cmd := exec.CommandContext(ctx, "sh", "-c", command)
 	cmd.Stdin = in
-	cmd.Stdout = io.MultiWriter(os.Stdout, &buf)
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
+	bytes, err := cmd.CombinedOutput()
+	actual := string(bytes)
 	status := cmd.ProcessState.ExitCode()
 	if err != nil && status != -1 {
-		return false, 1, errors.Wrap(err, "Failed to start command")
+		return &testResult{
+			Judge:  "RE",
+			Output: actual,
+			Status: status,
+		}, nil
 	}
 
-	actual := string(buf.Bytes())
-	return atcoder.Judge(actual, string(expected)), cmd.ProcessState.ExitCode(), nil
+	var judge string
+	if atcoder.Judge(actual, string(expected)) {
+		judge = "AC"
+	} else {
+		judge = "WA"
+	}
+	return &testResult{
+		Judge:  judge,
+		Output: actual,
+		Status: status,
+	}, nil
 }
