@@ -54,7 +54,7 @@ func cobraRun(f func(cmd *cobra.Command, args []string) int) func(cmd *cobra.Com
 
 func writeError(format string, a ...interface{}) int {
 	if len(a) > 0 {
-		fmt.Fprintf(os.Stderr, format+"\n", a)
+		fmt.Fprintf(os.Stderr, format+"\n", a...)
 	} else {
 		fmt.Fprintln(os.Stderr, format)
 	}

@@ -38,7 +38,6 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 	if ret != 0 {
 		return ret
 	}
-	contest := task.Contest
 
 	lang := config.Language()
 	if lang == "" {
@@ -46,9 +45,13 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 			"Retry this after set it with `config lang` command.")
 	}
 
-	bytes, err := ioutil.ReadFile(filepath.Join(cwd(), task.Script))
+	path := filepath.Join(cwd(), task.Script)
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return writeError("Failed to read script file: %s", err)
+	}
+	if len(strings.TrimSpace(string(bytes))) == 0 {
+		return writeError("Script file is empty: %s", path)
 	}
 
 	ac := atcoder.NewAtCoder(cmd.Context(), session)
@@ -63,7 +66,10 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 			return writeError("Error on waiting judge: %s", err)
 		}
 	}
-	fmt.Printf("See: https://atcoder.jp/contests/%s/submissions/%d\n", contest.ID, submission.ID)
+	if submission.Judge != "AC" {
+		fmt.Printf("See https://atcoder.jp/contests/%s/submissions/%d for detail.\n",
+			task.Contest.ID, submission.ID)
+	}
 
 	return 0
 }
