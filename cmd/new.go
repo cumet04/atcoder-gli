@@ -89,7 +89,7 @@ func runNew(cmd *cobra.Command, args []string) int {
 			return writeError("Failed to fetch task info: %s", err)
 		}
 		for _, s := range *samples {
-			name := fmt.Sprintf("sample_%s", s.Label())
+			name := fmt.Sprintf("sample-%s", s.Label())
 			ioutil.WriteFile(filepath.Join(samplePath, name+".in"), []byte(s.Input()), 0644)
 			ioutil.WriteFile(filepath.Join(samplePath, name+".out"), []byte(s.Output()), 0644)
 		}
