@@ -34,6 +34,8 @@ ex 1. run in abc100/b, skeleton_file = main.rb
 		Run:     cobraRun(runTest),
 		Long:    strings.TrimSpace(usage),
 	}
+	cmd.Flags().BoolP("justrun", "r", false, "just run, without judge")
+	cmd.Flags().StringP("number", "n", "", "test only specified number; set '1' for 'sample-1.in/out'")
 	rootCmd.AddCommand(cmd)
 }
 
@@ -42,6 +44,15 @@ type commandEnv struct {
 }
 
 func runTest(cmd *cobra.Command, args []string) int {
+	justrun, err := cmd.Flags().GetBool("justrun")
+	if err != nil {
+		panic(err)
+	}
+	num, err := cmd.Flags().GetString("number")
+	if err != nil {
+		panic(err)
+	}
+
 	task, ret := runDeterminTask()
 	if ret != 0 {
 		return ret
@@ -81,6 +92,10 @@ func runTest(cmd *cobra.Command, args []string) int {
 
 	// run test for samples
 	for _, name := range names {
+		if num != "" && fmt.Sprintf("sample-%s", num) != name {
+			continue
+		}
+
 		full := filepath.Join(sampleDir, name)
 		infile := full + ".in"
 		outfile := full + ".out"
@@ -95,6 +110,11 @@ func runTest(cmd *cobra.Command, args []string) int {
 			return writeError("Command execution is failed: %s", err)
 		}
 		fmt.Println("") // write \n for actual output without trailing \n
+
+		if justrun {
+			continue
+		}
+
 		if status != 0 {
 			fmt.Printf("=> RE; status code = %d\n", status)
 		} else if ok {
