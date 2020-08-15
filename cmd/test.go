@@ -28,10 +28,11 @@ ex 1. run in abc100/b, skeleton_file = main.rb
 -> submit abc100/b/main.rb for abc100's b task
 `
 	cmd := &cobra.Command{
-		Use:   "test",
-		Short: "Run test with sample in/outs",
-		Run:   cobraRun(runTest),
-		Long:  strings.TrimSpace(usage),
+		Use:     "test",
+		Aliases: []string{"t"},
+		Short:   "Run test with sample in/outs",
+		Run:     cobraRun(runTest),
+		Long:    strings.TrimSpace(usage),
 	}
 	rootCmd.AddCommand(cmd)
 }

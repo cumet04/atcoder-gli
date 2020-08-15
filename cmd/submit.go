@@ -23,10 +23,11 @@ ex 1. run in abc100/b, skeleton_file = main.rb
 -> submit abc100/b/main.rb for abc100's b task
 `
 	cmd := &cobra.Command{
-		Use:   "submit",
-		Short: "Submit file to a task",
-		Run:   cobraRun(runSubmit),
-		Long:  strings.TrimSpace(usage),
+		Use:     "submit",
+		Aliases: []string{"s"},
+		Short:   "Submit file to a task",
+		Run:     cobraRun(runSubmit),
+		Long:    strings.TrimSpace(usage),
 	}
 	cmd.Flags().Bool("nowait", false, "exit without waiting for judge complete")
 	rootCmd.AddCommand(cmd)
