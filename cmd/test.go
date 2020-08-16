@@ -85,7 +85,7 @@ func runTest(cmd *cobra.Command, args []string) int {
 
 	// generate command string from template
 	cenv := commandEnv{
-		ScriptFile: config.SkeletonFile(),
+		ScriptFile: filepath.Base(config.SkeletonFile()),
 	}
 	tmpl, err := template.New("command").Parse(config.Command())
 	if err != nil {
