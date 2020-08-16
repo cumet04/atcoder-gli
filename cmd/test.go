@@ -117,6 +117,8 @@ func runTest(cmd *cobra.Command, args []string) int {
 		}
 
 		if justrun {
+			fmt.Println("Done")
+			fmt.Print(result.Output)
 			continue
 		}
 
