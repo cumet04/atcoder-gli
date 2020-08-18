@@ -20,20 +20,40 @@ import (
 
 func init() {
 	usage := `
-Submit a file as answer for a task, and wait the judge is complete.
-Target file is determined by looking for a file named config's skeleton_file name, in current directory.
-Target task is guessed from current directory.
-Language is read from config value: 'language'.
+Run command with sample inputs and judge with corresponding outputs.
+It uses a script and samples that are in current directory.
 
-ex 1. run in abc100/b, skeleton_file = main.rb
--> submit abc100/b/main.rb for abc100's b task
+In default, all samples are tested in order.
 `
+	example := `  In all cases, Current directory tree is:
+  + abc100/a/
+    - main.rb
+    + samples/
+      - sample-1.in
+      - sample-1.out
+      - sample-2.in
+      - sample-2.out
+  and config.command="ruby ./{{.ScriptFile}}", config.skeleton_file="main.rb".
+  
+  ex1. 'acg test'
+  -> run 'ruby main.rb' with stdin(sample-1.in) and judge stdout with sample-1.out.
+     and same with sample-2.in / sample-2.out
+  
+  ex2. 'acg test --number 1'
+  -> run 'ruby main.rb' with stdin(sample-1.in) and judge stdout with sample-1.out.
+     it's all. sample-2 is not tested.
+  
+  ex3. 'acg test --justrun --number 2'
+  -> run 'ruby main.rb' with stdin(sample-2.in) and show stdout/stderr of the command.
+     Judge is not executed.`
+
 	cmd := &cobra.Command{
 		Use:     "test",
 		Aliases: []string{"t"},
 		Short:   "Run test with sample in/outs",
-		Run:     cobraRun(runTest),
 		Long:    strings.TrimSpace(usage),
+		Example: example,
+		Run:     cobraRun(runTest),
 	}
 	cmd.Flags().BoolP("justrun", "r", false, "just run, without judge")
 	cmd.Flags().StringP("number", "n", "", "test only specified number; set '1' for 'sample-1.in/out'")

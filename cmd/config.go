@@ -26,6 +26,7 @@ If you run this without any options and config file, new config file is created 
 
 See 'Global Flags' for available config options.
 	`
+	// definitionに長い説明書いてここのusageに出すのがよさそう（特にskeleton_fileの仕様）
 	configCmd.Long = strings.TrimSpace(usage)
 	rootCmd.AddCommand(configCmd)
 }
