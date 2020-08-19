@@ -15,23 +15,21 @@ import (
 )
 
 func init() {
-	usage := `
+	cmd := newCommand(&commandArgs{
+		Use:     "submit",
+		Aliases: []string{"s"},
+		Run:     runSubmit,
+		Short:   "Submit file to a task",
+		Long: `
 Submit a file as answer for a task, and wait the judge is complete.
 Target file is determined by looking for a file named config's skeleton_file name, in current directory.
 Target task is guessed from current directory.
 Language is read from config value: 'language'.
-`
-	example := `  ex 1. run in abc100/b, skeleton_file = main.rb
-  -> submit abc100/b/main.rb for abc100's b task`
-
-	cmd := &cobra.Command{
-		Use:     "submit",
-		Aliases: []string{"s"},
-		Short:   "Submit file to a task",
-		Long:    strings.TrimSpace(usage),
-		Example: example,
-		Run:     cobraRun(runSubmit),
-	}
+		`,
+		Example: `
+ex 1. run in abc100/b, skeleton_file = main.rb
+-> submit abc100/b/main.rb for abc100's b task
+		`})
 	cmd.Flags().Bool("nowait", false, "exit without waiting for judge complete")
 	rootCmd.AddCommand(cmd)
 }

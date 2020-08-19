@@ -10,21 +10,19 @@ import (
 )
 
 func init() {
-	usage := `
+	configCmd.AddCommand(
+		newCommand(&commandArgs{
+			Use:   "lang",
+			Run:   runLang,
+			Short: "Select preferred language for submit",
+			Long: `
 Search and select preferred language.
 Selected language is saved in config and used when submit code.
 
 You can search language with keyword (prompted) and choose one from them.
 Search targets are all available languages in AtCoder,
 and keyword is case-insensitive.
-`
-	configCmd.AddCommand(
-		&cobra.Command{
-			Use:   "lang",
-			Short: "Select preferred language for submit",
-			Long:  strings.TrimSpace(usage),
-			Run:   cobraRun(runLang),
-		})
+			`}))
 }
 
 func runLang(cmd *cobra.Command, args []string) int {

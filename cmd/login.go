@@ -5,28 +5,25 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	usage := `
+	rootCmd.AddCommand(
+		newCommand(&commandArgs{
+			Use:   "login [USERNAME] [PASSWORD]",
+			Args:  cobra.MaximumNArgs(2),
+			Run:   runLang,
+			Short: "Login to AtCoder",
+			Long: `
 Login to AtCoder with USERNAME and PASSWORD.
 USERNAME and PASSWORD are optional, and they are prompted if omitted.
 Some actions (ex. 'acg submit') require login beforehand, so you need to login with this command.
 
 See also 'acg help session' for current login status.
-`
-	rootCmd.AddCommand(
-		&cobra.Command{
-			Use:   "login [USERNAME] [PASSWORD]",
-			Short: "Login to AtCoder",
-			Long:  strings.TrimSpace(usage),
-			Args:  cobra.MaximumNArgs(2),
-			Run:   cobraRun(runLogin),
-		})
+			`}))
 }
 
 func runLogin(cmd *cobra.Command, args []string) int {

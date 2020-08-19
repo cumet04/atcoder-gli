@@ -2,27 +2,24 @@ package cmd
 
 import (
 	"path"
-	"strings"
 
 	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	usage := `
+	rootCmd.AddCommand(
+		newCommand(&commandArgs{
+			Use:   "open [CONTEST_ID]",
+			Args:  cobra.MaximumNArgs(1),
+			Run:   runOpen,
+			Short: "Open contest page with browser",
+			Long: `
 Open a contest page with default browser.
 Target contest is specified by CONTEST_ID, or guessed by current directory.
 
 See also 'acg help show' for guessing target contest specification.
-`
-	rootCmd.AddCommand(
-		&cobra.Command{
-			Use:   "open [CONTEST_ID]",
-			Short: "Open contest page with browser",
-			Long:  strings.TrimSpace(usage),
-			Run:   cobraRun(runOpen),
-			Args:  cobra.MaximumNArgs(1),
-		})
+			`}))
 }
 
 func runOpen(cmd *cobra.Command, args []string) int {

@@ -16,6 +16,6 @@ for cmd in \
   echo ""
   echo "#### ${cmd}"
   echo '```'
-  go run main.go help $cmd
+  go run acg/main.go help $cmd
   echo '```'
 done

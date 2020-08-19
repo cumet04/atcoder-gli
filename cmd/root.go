@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
@@ -20,9 +21,43 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "acg",
 		Short: "accoder-cli on go",
-		Long:  "accoder-cli on golang",
 	}
 )
+
+type commandArgs struct {
+	Use     string
+	Aliases []string
+	Short   string
+	Long    string
+	Example string
+	Run     func(cmd *cobra.Command, args []string) int
+	Args    cobra.PositionalArgs
+}
+
+func newCommand(arg *commandArgs) *cobra.Command {
+	indent := func(raw string) string {
+		if raw == "" {
+			return ""
+		}
+		out := ""
+		for _, l := range strings.Split(strings.TrimSpace(raw), "\n") {
+			out = out + "  " + l + "\n"
+		}
+		return strings.ReplaceAll(strings.TrimSuffix(out, "\n"), "\t", "  ")
+	}
+	return &cobra.Command{
+		Use:     arg.Use,
+		Aliases: arg.Aliases,
+		Short:   arg.Short,
+		Long:    strings.TrimSpace(arg.Long),
+		Example: indent(arg.Example),
+		Run: func(cmd *cobra.Command, args []string) {
+			r := arg.Run(cmd, args)
+			os.Exit(r)
+		},
+		Args: arg.Args,
+	}
+}
 
 // Execute run rootCmd
 func Execute() error {
@@ -42,13 +77,6 @@ func initConfig() {
 		session = string(b)
 	} else {
 		session = ""
-	}
-}
-
-func cobraRun(f func(cmd *cobra.Command, args []string) int) func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
-		r := f(cmd, args)
-		os.Exit(r)
 	}
 }
 

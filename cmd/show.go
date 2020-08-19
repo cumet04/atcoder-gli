@@ -3,13 +3,18 @@ package cmd
 import (
 	"atcoder-gli/atcoder"
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	usage := `
+	rootCmd.AddCommand(
+		newCommand(&commandArgs{
+			Use:   "show [CONTEST_ID]",
+			Args:  cobra.MaximumNArgs(1),
+			Run:   runShow,
+			Short: "Show contest summary",
+			Long: `
 Show a contest summary.
 Target contest is specified by CONTEST_ID, or guessed by current directory.
 
@@ -17,15 +22,7 @@ If you run this command in contest directory (created by 'acg new') or under it,
 target contest is guessed to the directory's contest.
 
 If CONTEST_ID is present, use it for determining target contest (current directory is not considered).
-`
-	rootCmd.AddCommand(
-		&cobra.Command{
-			Use:   "show [CONTEST_ID]",
-			Short: "Show contest summary",
-			Long:  strings.TrimSpace(usage),
-			Run:   cobraRun(runShow),
-			Args:  cobra.MaximumNArgs(1),
-		})
+			`}))
 }
 
 func runShow(cmd *cobra.Command, args []string) int {

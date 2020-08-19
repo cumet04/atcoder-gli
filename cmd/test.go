@@ -19,42 +19,40 @@ import (
 )
 
 func init() {
-	usage := `
+	cmd := newCommand(&commandArgs{
+		Use:     "test",
+		Aliases: []string{"t"},
+		Run:     runTest,
+		Short:   "Run test with sample in/outs",
+		Long: `
 Run command with sample inputs and judge with corresponding outputs.
 It uses a script and samples that are in current directory.
 
 In default, all samples are tested in order.
-`
-	example := `  In all cases, Current directory tree is:
-  + abc100/a/
-    - main.rb
-    + samples/
-      - sample-1.in
-      - sample-1.out
-      - sample-2.in
-      - sample-2.out
-  and config.command="ruby ./{{.ScriptFile}}", config.skeleton_file="main.rb".
-  
-  ex1. 'acg test'
-  -> run 'ruby main.rb' with stdin(sample-1.in) and judge stdout with sample-1.out.
-     and same with sample-2.in / sample-2.out
-  
-  ex2. 'acg test --number 1'
-  -> run 'ruby main.rb' with stdin(sample-1.in) and judge stdout with sample-1.out.
-     it's all. sample-2 is not tested.
-  
-  ex3. 'acg test --justrun --number 2'
-  -> run 'ruby main.rb' with stdin(sample-2.in) and show stdout/stderr of the command.
-     Judge is not executed.`
+		`,
+		Example: `
+In all cases, Current directory tree is:
++ abc100/a/
+	- main.rb
+	+ samples/
+		- sample-1.in
+		- sample-1.out
+		- sample-2.in
+		- sample-2.out
+and config.command="ruby ./{{.ScriptFile}}", config.skeleton_file="main.rb".
 
-	cmd := &cobra.Command{
-		Use:     "test",
-		Aliases: []string{"t"},
-		Short:   "Run test with sample in/outs",
-		Long:    strings.TrimSpace(usage),
-		Example: example,
-		Run:     cobraRun(runTest),
-	}
+ex1. 'acg test'
+-> run 'ruby main.rb' with stdin(sample-1.in) and judge stdout with sample-1.out.
+		and same with sample-2.in / sample-2.out
+
+ex2. 'acg test --number 1'
+-> run 'ruby main.rb' with stdin(sample-1.in) and judge stdout with sample-1.out.
+		it's all. sample-2 is not tested.
+
+ex3. 'acg test --justrun --number 2'
+-> run 'ruby main.rb' with stdin(sample-2.in) and show stdout/stderr of the command.
+		Judge is not executed.
+		`})
 	cmd.Flags().BoolP("justrun", "r", false, "just run, without judge")
 	cmd.Flags().StringP("number", "n", "", "test only specified number; set '1' for 'sample-1.in/out'")
 	rootCmd.AddCommand(cmd)

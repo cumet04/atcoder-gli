@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -12,22 +11,19 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var configCmd = &cobra.Command{
+var configCmd = newCommand(&commandArgs{
 	Use:   "config",
+	Run:   runConfig,
 	Short: "config utility",
-	Run:   cobraRun(runConfig),
-}
-
-func init() {
-	usage := `
+	Long: `
 Show/Write config values from/to config file.
 Run with some config options, it write the value to file.
 If you run this without any options and config file, new config file is created with default values.
 
 See 'Global Flags' for available config options.
-	`
-	// definitionに長い説明書いてここのusageに出すのがよさそう（特にskeleton_fileの仕様）
-	configCmd.Long = strings.TrimSpace(usage)
+	`})
+
+func init() {
 	rootCmd.AddCommand(configCmd)
 }
 
