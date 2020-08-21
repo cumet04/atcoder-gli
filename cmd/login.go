@@ -15,7 +15,7 @@ func init() {
 		newCommand(&commandArgs{
 			Use:   "login [USERNAME] [PASSWORD]",
 			Args:  cobra.MaximumNArgs(2),
-			Run:   runLang,
+			Run:   runLogin,
 			Short: "Login to AtCoder",
 			Long: `
 Login to AtCoder with USERNAME and PASSWORD.
