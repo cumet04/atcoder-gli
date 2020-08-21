@@ -67,6 +67,9 @@ func Execute() error {
 func init() {
 	cobra.OnInitialize(initConfig)
 	config = *NewConfig(configDir(), rootCmd)
+
+	_, ok := os.LookupEnv("ATCODER_GLI_HTTP_DUMP")
+	atcoder.HTTPDump = ok
 }
 
 func initConfig() {
@@ -90,6 +93,8 @@ func writeError(format string, a ...interface{}) int {
 }
 
 func readContestInfo(basepath string) (string, *atcoder.Contest, error) {
+	// Seach .contest.json in cwd, cwd/.., cwd/../..
+	// These assume that command runs in contest root, task dir, sample dir
 	search := []string{
 		basepath,
 		filepath.Join(basepath, ".."),

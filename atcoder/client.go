@@ -4,10 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -21,6 +25,9 @@ const (
 	// LangEn is language: english
 	LangEn
 )
+
+// HTTPDump is flag to dump http data (for debug)
+var HTTPDump bool = false
 
 // A Client has web client params
 type Client struct {
@@ -80,6 +87,7 @@ func (c *Client) DoGetWithParam(spath string, expect int, params map[string]stri
 	}
 	if resp.StatusCode != expect {
 		msg := fmt.Sprintf("'[GET] %s' returns unexpected status: %d", spath, resp.StatusCode)
+		dumpResponse(resp)
 		return nil, errors.New(msg)
 	}
 	return resp, nil
@@ -104,6 +112,7 @@ func (c *Client) DoFormPost(spath string, expect int, params map[string]string) 
 	}
 	if resp.StatusCode != expect {
 		msg := fmt.Sprintf("'[POST] %s' returns unexpected status: %d", spath, resp.StatusCode)
+		dumpResponse(resp)
 		return nil, errors.New(msg)
 	}
 	return resp, nil
@@ -142,4 +151,32 @@ func (c *Client) doRequest(method, spath string, header map[string]string, query
 		}
 	}
 	return resp, err
+}
+
+func dumpResponse(resp *http.Response) {
+	if !HTTPDump {
+		return
+	}
+	dir := filepath.Join(os.TempDir(), "atcoder-gli")
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	name := fmt.Sprintf(
+		"%s%s.html",
+		time.Now().Format(time.RFC3339),
+		strings.ReplaceAll(resp.Request.URL.RequestURI(), "/", "-"),
+	)
+	path := filepath.Join(dir, name)
+	err = ioutil.WriteFile(path, b, 0644)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("dump html to %s\n", path)
 }
