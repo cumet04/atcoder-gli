@@ -3,6 +3,7 @@ package cmd
 import (
 	"atcoder-gli/atcoder"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -46,13 +47,37 @@ func runShow(cmd *cobra.Command, args []string) int {
 	ac := atcoder.NewAtCoder(cmd.Context(), session)
 	contest, err := ac.FetchContest(id)
 	if err != nil {
-		return writeError("%s", err)
+		return writeError("Failed to fetch contest info: %s", err)
+	}
+
+	var remaining time.Duration
+	t, err := ac.FetchVirtualStartTime(id)
+	if err != nil {
+		return writeError("Failed to fetch virtual participate info: %s", err)
+	}
+	if t != nil && time.Now().After(*t) {
+		progress := time.Now().Sub(*t)
+		remaining = contest.Duration - progress
+	} else if contest.Registered {
+		remaining = time.Now().Sub(contest.StartAt)
 	}
 
 	fmt.Printf("%s (%s)\n", contest.Title, contest.ID)
 	fmt.Println("-----")
 	for _, p := range contest.Tasks {
 		fmt.Printf("%s - %s\n", p.Label, p.Title)
+	}
+	if remaining != 0 {
+		fmt.Println("-----")
+		str := ""
+		if remaining.Hours() > 1 {
+			str = fmt.Sprintf("%02d:", int(remaining.Hours()))
+		}
+		if remaining.Minutes() > 1 {
+			str = str + fmt.Sprintf("%02d:", int(remaining.Minutes())%60)
+		}
+		str = str + fmt.Sprintf("%02d", int(remaining.Seconds())%60)
+		fmt.Printf("Remaining: %s\n", str)
 	}
 	return 0
 }

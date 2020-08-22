@@ -112,18 +112,22 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer resp.Body.Close()
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		panic(err)
 	}
 
-	contest := NewContest(
-		id,
-		doc.Find(".navbar .contest-title").First().Text(),
-		resp.Request.URL.String(),
-	)
+	times := doc.Find(".contest-duration time")
+	startAt := parseTime(times.Eq(0).Text())
+	endAt := parseTime(times.Eq(1).Text())
+	contest := Contest{
+		ID:       id,
+		Title:    doc.Find(".navbar .contest-title").First().Text(),
+		URL:      resp.Request.URL.String(),
+		StartAt:  startAt,
+		Duration: endAt.Sub(startAt),
+	}
 	doc.Find("table tbody tr").Each(func(i int, tr *goquery.Selection) {
 		links := tr.Find("td a")
 
@@ -138,7 +142,19 @@ func (ac *AtCoder) FetchContest(id string) (*Contest, error) {
 		))
 	})
 
-	return contest, nil
+	// fetch register or not
+	resp, err = ac.client.DoGet(fmt.Sprintf("/contests/%s", id), 200)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	doc, err = goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	contest.Registered = doc.Find("a[data-target='#modal-unregister']").Length() != 0
+
+	return &contest, nil
 }
 
 // FetchSampleInout gets a task's list of sample in/out pair
@@ -226,7 +242,7 @@ func (ac *AtCoder) Submit(task *Task, langID, body string) (*Submission, error) 
 	sidStr, _ := tds.Eq(4).Attr("data-id")
 	sid, _ := strconv.Atoi(sidStr)
 
-	at, _ := time.Parse("2006-01-02 15:04:05-0700", tds.Find("time").First().Text())
+	at := parseTime(tds.Find("time").First().Text())
 	submission := NewSubmission(
 		sid,
 		0, // Time/Memory are not determined at this point
@@ -272,6 +288,31 @@ func (ac *AtCoder) PollSubmissionStatus(sub *Submission) (int, error) {
 	return judge.Interval, nil
 }
 
+// FetchVirtualStartTime gets virtual participation start time of contestID's contest
+// It returns nil if login user does not participate virtual contest
+func (ac *AtCoder) FetchVirtualStartTime(contestID string) (*time.Time, error) {
+	path := fmt.Sprintf("/contests/%s/virtual", contestID)
+	resp, err := ac.client.DoGet(path, 200)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	unreg := doc.Find(fmt.Sprintf("form[action='%s/unregister']", path))
+	if unreg.Length() == 0 {
+		// unregister form doesn't exists -> user doesn't participate virtual contest
+		return nil, nil
+	}
+
+	start := parseTime(unreg.Parent().Find("time").First().Text())
+	return &start, nil
+}
+
 func extractFlash(cookies []*http.Cookie, key string) string {
 	var raw string
 	for _, cookie := range cookies {
@@ -290,4 +331,12 @@ func extractFlash(cookies []*http.Cookie, key string) string {
 		}
 	}
 	return ""
+}
+
+func parseTime(str string) time.Time {
+	t, err := time.Parse("2006-01-02 15:04:05-0700", str)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
