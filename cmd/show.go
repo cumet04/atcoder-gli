@@ -44,6 +44,8 @@ func runShow(cmd *cobra.Command, args []string) int {
 		id = contest.ID
 	}
 
+	// MEMO: 開催前のコンテストにshowすると/tasksが404で失敗する。
+	// コマンドの挙動としてはおかしい気もするが、それで困る可能性が思い当たらないので放置
 	ac := atcoder.NewAtCoder(cmd.Context(), session)
 	contest, err := ac.FetchContest(id)
 	if err != nil {
