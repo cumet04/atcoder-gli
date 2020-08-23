@@ -71,7 +71,7 @@ func (ac *AtCoder) CheckSession() (string, error) {
 	if err != nil {
 		panic(err)
 	}
-	name := doc.Find(".header-mypage .user-gray").First().Text()
+	name := doc.Find(".header-mypage .header-mypage_btn span.bold").First().Text()
 
 	return name, nil
 }
