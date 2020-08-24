@@ -83,8 +83,7 @@ func runTest(cmd *cobra.Command, args []string) int {
 		return ret
 	}
 
-	// cwd should be task directory if runDeterminTask() is ok
-	sampleDir := filepath.Join(cwd(), task.SampleDir)
+	sampleDir := filepath.Join(cwd(), task.SampleDir) // cwd should be task directory if runDeterminTask() is ok
 	files, err := ioutil.ReadDir(sampleDir)
 	if err != nil {
 		return writeError("Cannot read sample dir: %s", err)
@@ -128,71 +127,70 @@ func runTest(cmd *cobra.Command, args []string) int {
 			return writeError("Output file corresponding %s is not found: %s", name+".in", outfile)
 		}
 
-		fmt.Printf("* %s ... ", name)
-		result, err := execTestRun(cmd.Context(), command, infile, outfile)
+		var err error
+		if justrun {
+			fmt.Printf("* %s\n", name)
+			err = execTestJustRun(cmd.Context(), command, infile)
+		} else {
+			fmt.Printf("* %s ... ", name)
+			err = execTestWithJudge(cmd.Context(), command, infile, outfile)
+		}
 		if err != nil {
 			return writeError("Command execution is failed: %s", err)
-		}
-
-		if justrun {
-			fmt.Println("Done")
-			fmt.Print(result.Output)
-			continue
-		}
-
-		switch result.Judge {
-		case "AC":
-			fmt.Fprintln(colorable.NewColorableStdout(), aurora.Green("AC"))
-		case "WA":
-			fmt.Fprintln(colorable.NewColorableStdout(), aurora.Red("WA"))
-			fmt.Println("expected output:")
-			expected, err := ioutil.ReadFile(outfile)
-			if err != nil {
-				return writeError("Failed to read out-file: %s", err)
-			}
-			fmt.Println(string(expected))
-		case "RE":
-			fmt.Fprint(colorable.NewColorableStdout(), aurora.Yellow("RE"))
-			fmt.Printf(", with status code = %d\n", result.Status)
-			fmt.Println(result.Output)
 		}
 	}
 
 	return 0
 }
 
-func execTestRun(ctx context.Context, command, infile, outfile string) (*testResult, error) {
+func execTestWithJudge(ctx context.Context, command, infile, outfile string) error {
 	in, err := os.Open(infile)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to read in-file")
+		return errors.Wrap(err, "Failed to read in-file")
 	}
-	expected, err := ioutil.ReadFile(outfile)
+	expectedBytes, err := ioutil.ReadFile(outfile)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to read out-file")
+		return errors.Wrap(err, "Failed to read out-file")
 	}
+	expected := string(expectedBytes)
 
 	cmd := exec.CommandContext(ctx, "sh", "-c", command)
 	cmd.Stdin = in
 	bytes, err := cmd.CombinedOutput()
 	actual := string(bytes)
 	status := cmd.ProcessState.ExitCode()
-	if err != nil && status != -1 {
-		return &testResult{
-			Judge:  "RE",
-			Output: actual,
-			Status: status,
-		}, nil
+	switch status {
+	case 0:
+		if atcoder.Judge(actual, expected) {
+			fmt.Fprintln(colorable.NewColorableStdout(), aurora.Green("AC"))
+		} else {
+			fmt.Fprintln(colorable.NewColorableStdout(), aurora.Red("WA"))
+			fmt.Println("expected output:")
+			fmt.Println(expected)
+		}
+	case -1:
+		return err
+	default:
+		fmt.Fprint(colorable.NewColorableStdout(), aurora.Yellow("RE"))
+		fmt.Printf(", with status code = %d\n", status)
+		fmt.Println(actual)
+	}
+	return nil
+}
+
+func execTestJustRun(ctx context.Context, command, infile string) error {
+	in, err := os.Open(infile)
+	if err != nil {
+		return errors.Wrap(err, "Failed to read in-file")
 	}
 
-	var judge string
-	if atcoder.Judge(actual, string(expected)) {
-		judge = "AC"
-	} else {
-		judge = "WA"
+	cmd := exec.CommandContext(ctx, "sh", "-c", command)
+	cmd.Stdin = in
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if cmd.ProcessState.ExitCode() == -1 {
+		return err
 	}
-	return &testResult{
-		Judge:  judge,
-		Output: actual,
-		Status: status,
-	}, nil
+	return nil
 }
