@@ -21,7 +21,7 @@ func TestCheckSession_LoggedIn(t *testing.T) {
 		t.Fatalf("Error on ac.CheckSession: %s", err)
 	}
 	if actual != "cumet04" {
-		t.Fail()
+		t.Errorf("\nexpected: %v\nactual  : %v", "cumet04", actual)
 	}
 }
 
@@ -37,7 +37,67 @@ func TestCheckSession_Anonymous(t *testing.T) {
 		t.Fatalf("Error on ac.CheckSession: %s", err)
 	}
 	if actual != "" {
-		t.Fail()
+		t.Errorf("\nexpected: %v\nactual  : %v", "", actual)
+	}
+}
+
+func TestFetchSubmissionDetail_OnContest(t *testing.T) {
+	ac := atcoder.NewAtCoderTester(&StaticRoundTripper{
+		pattern: "on_contest",
+		baseResponse: http.Response{
+			StatusCode: 200,
+		},
+	})
+
+	sub := (&atcoder.Contest{ID: "abc176"}).
+		AddTask(
+			atcoder.Task{ID: "abc176_d"},
+		).AddSubmission(
+		atcoder.Submission{ID: 16148321},
+	)
+	err := ac.FetchSubmissionDetail(sub)
+	if err != nil {
+		t.Fatalf("Error on ac.FetchSubmissionDetail: %s", err)
+	}
+
+	// MEMO: Maps are now printed in key-sorted order to ease testing.
+	// https://stackoverflow.com/questions/18208394/how-to-test-the-equivalence-of-maps-in-golang/54173309#54173309
+	expected := map[string]int{
+		"AC":  8,
+		"WA":  5,
+		"TLE": 1,
+	}
+	if fmt.Sprint(sub.Cases) != fmt.Sprint(expected) {
+		t.Errorf("\nexpected: %v\nactual  : %v", expected, sub.Cases)
+	}
+}
+
+func TestFetchSubmissionDetail_After(t *testing.T) {
+	ac := atcoder.NewAtCoderTester(&StaticRoundTripper{
+		pattern: "after",
+		baseResponse: http.Response{
+			StatusCode: 200,
+		},
+	})
+
+	sub := (&atcoder.Contest{ID: "abc176"}).
+		AddTask(
+			atcoder.Task{ID: "abc176_d"},
+		).AddSubmission(
+		atcoder.Submission{ID: 16148321},
+	)
+	err := ac.FetchSubmissionDetail(sub)
+	if err != nil {
+		t.Fatalf("Error on ac.FetchSubmissionDetail: %s", err)
+	}
+
+	expected := map[string]int{
+		"AC":  8,
+		"WA":  5,
+		"TLE": 1,
+	}
+	if fmt.Sprint(sub.Cases) != fmt.Sprint(expected) {
+		t.Errorf("\nexpected: %v\nactual  : %v", expected, sub.Cases)
 	}
 }
 

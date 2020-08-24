@@ -1,0 +1,475 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body>
+
+<script type="text/javascript">
+	var __pParams = __pParams || [];
+	__pParams.push({client_id: '468', c_1: 'atcodercontest', c_2: 'ClientSite'});
+</script>
+<script type="text/javascript" src="https://cdn.d2-apps.net/js/tr.js" async></script>
+
+
+<div id="modal-contest-start" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">コンテスト開始</h4>
+			</div>
+			<div class="modal-body">
+				<p>AtCoder Beginner Contest 176が開始されました。</p>
+			</div>
+			<div class="modal-footer">
+				
+					<a class="btn btn-primary" href='/contests/abc176/tasks'>問題一覧ページへ移動</a>
+				
+			</div>
+		</div>
+	</div>
+</div>
+<div id="modal-contest-end" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">コンテスト終了</h4>
+			</div>
+			<div class="modal-body">
+				<p>AtCoder Beginner Contest 176は終了しました。</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="main-div" class="float-container">
+
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+					<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="/home"></a>
+			</div>
+			<div class="collapse navbar-collapse" id="navbar-collapse">
+				<ul class="nav navbar-nav">
+				
+					<li><a class="contest-title" href="/contests/abc176">AtCoder Beginner Contest 176</a></li>
+				
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+							<img src='//img.atcoder.jp/assets/top/img/flag-lang/ja.png'> 日本語 <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="/contests/abc176/submissions/16148321?lang=ja"><img src='//img.atcoder.jp/assets/top/img/flag-lang/ja.png'> 日本語</a></li>
+							<li><a href="/contests/abc176/submissions/16148321?lang=en"><img src='//img.atcoder.jp/assets/top/img/flag-lang/en.png'> English</a></li>
+						</ul>
+					</li>
+					
+					
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> cumet04 (Contestant) <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="/users/cumet04"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> マイプロフィール</a></li>
+								<li class="divider"></li>
+								<li><a href="/settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> 基本設定</a></li>
+								<li><a href="/settings/icon"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span> アイコン設定</a></li>
+								<li><a href="/settings/password"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> パスワードの変更</a></li>
+								<li><a href="/settings/fav"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> お気に入り管理</a></li>
+								
+								
+								
+								<li class="divider"></li>
+								<li><a href="javascript:void(form_logout.submit())"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> ログアウト</a></li>
+							</ul>
+						</li>
+					
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<form method="POST" name="form_logout" action="/logout?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2Fabc176%2Fsubmissions%2F16148321">
+		<input type="hidden" name="csrf_token" value="---some----csrf----token----test----value---" />
+	</form>
+	<div id="main-container" class="container"
+		 	style="padding-top:50px;">
+		
+
+<div class="row">
+	<div id="contest-nav-tabs" class="col-sm-12 mb-2 cnvtb-fixed">
+	<div>
+		<small class="contest-duration">
+			
+				コンテスト時間:
+				<a href='http://www.timeanddate.com/worldclock/fixedtime.html?iso=20200822T2100&p1=248' target='blank'><time class='fixtime fixtime-full'>2020-08-22 21:00:00+0900</time></a> ~ <a href='http://www.timeanddate.com/worldclock/fixedtime.html?iso=20200822T2240&p1=248' target='blank'><time class='fixtime fixtime-full'>2020-08-22 22:40:00+0900</time></a> 
+				(100分)
+			
+		</small>
+		<small class="back-to-home pull-right"><a href="/home">AtCoderホームへ戻る</a></small>
+	</div>
+	<ul class="nav nav-tabs">
+		<li><a href="/contests/abc176"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> トップ</a></li>
+		
+			<li><a href="/contests/abc176/tasks"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> 問題</a></li>
+		
+
+		
+			<li><a href="/contests/abc176/clarifications"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> 質問 <span id="clar-badge" class="badge"></span></a></li>
+		
+
+		
+			<li><a href="/contests/abc176/submit"><span class="glyphicon glyphicon-send" aria-hidden="true"></span> 提出</a></li>
+		
+
+		
+			<li class="active">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> 提出結果<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href="/contests/abc176/submissions"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> すべての提出</a></li>
+					
+						<li><a href="/contests/abc176/submissions/me"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> 自分の提出</a></li>
+						<li class="divider"></li>
+						<li><a href="/contests/abc176/score"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> 自分の得点状況</a></li>
+					
+				</ul>
+			</li>
+		
+
+		
+			
+				
+					<li><a href="/contests/abc176/standings"><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span> 順位表</a></li>
+				
+			
+				
+					<li><a href="/contests/abc176/standings/virtual"><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span> バーチャル順位表</a></li>
+				
+			
+		
+
+		
+			<li><a href="/contests/abc176/custom_test"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> コードテスト</a></li>
+		
+
+		
+			<li><a href="/contests/abc176/editorial"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> 解説</a></li>
+		
+		
+
+		<li class="pull-right"><a id="fix-cnvtb" href="javascript:void(0)"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a></li>
+	</ul>
+</div>
+	
+		
+		<div class="col-sm-12">
+			<p>
+				<span class="h2">提出 #16148321</span>
+				
+			</p>
+			<hr>
+			<p><span class="h4">ソースコード</span> <a class='btn-text toggle-btn-text source-code-expand-btn' data-on-text='拡げる' data-off-text='折りたたむ' data-target='submission-code'>拡げる</a></p>
+			<div class="div-btn-copy"><span class="btn-copy btn-pre" tabindex="0" data-toggle="tooltip" data-trigger="manual" title="Copied!" data-target="submission-code-for-copy">Copy</span></div>
+			<pre id="submission-code" class="prettyprint linenums">
+</pre>
+
+			<h4>
+				提出情報
+				
+			</h4>
+			
+			<div class="panel panel-default"><table class="table table-bordered table-striped">
+				<tr>
+					<th class="col-sm-4">提出日時</th>
+					<td class="text-center"><time class='fixtime fixtime-second'>2020-08-22 22:34:27+0900</time></td>
+				</tr>
+				<tr>
+					<th>問題</th>
+					<td class="text-center"><a href="/contests/abc176/tasks/abc176_d">D - Wizard in Maze</a></td>
+				</tr>
+				<tr>
+					<th>ユーザ</th>
+					<td class="text-center"><a href="/users/cumet04">cumet04</a> <a href='/contests/abc176/submissions?f.User=cumet04'><span class='glyphicon glyphicon-search black' aria-hidden='true' data-toggle='tooltip' title='cumet04さんの提出を見る'></span></a></td>
+				</tr>
+				<tr>
+					<th>言語</th>
+					<td class="text-center">Ruby (2.7.1)</td>
+				</tr>
+				<tr>
+					<th>得点</th>
+					<td class="text-center">0</td>
+				</tr>
+				<tr>
+					<th>コード長</th>
+					<td class="text-center">2259 Byte</td>
+				</tr>
+				<tr>
+					<th>結果</th>
+					<td id="judge-status" class="text-center"><span class='label label-warning' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="不正解">WA</span></td>
+				</tr>
+				
+					<tr>
+						<th>実行時間</th>
+						<td class="text-center">2213 ms</td>
+					</tr>
+					<tr>
+						<th>メモリ</th>
+						<td class="text-center">182512 KB</td>
+					</tr>
+				
+			</table></div>
+
+			
+				<h4>コンパイルエラー</h4>
+				<pre>./Main.rb:87: warning: duplicated `when&#39; clause with line 63 is ignored
+</pre>
+			
+
+			
+				<h4>ジャッジ結果</h4>
+				
+					<div class="panel panel-default"><table class="table table-bordered table-striped th-center">
+						<thead>
+						<tr>
+							<th class="no-break">セット名</th>
+							<th class="no-break">得点 / 配点</th>
+							<th>テストケース</th>
+						</tr>
+						</thead>
+						<tbody>
+						
+							<tr>
+								<td class="text-center">Sample</td>
+								<td class="text-center">0 / 0</td>
+								<td>sample_01.txt, sample_02.txt, sample_03.txt</td>
+							</tr>
+						
+							<tr>
+								<td class="text-center">All</td>
+								<td class="text-center">0 / 400</td>
+								<td>hand_01.txt, hand_02.txt, max_01.txt, random_01.txt, random_02.txt, random_03.txt, random_04.txt, random_05.txt, random_06.txt, random_11.txt, random_12.txt, sample_01.txt, sample_02.txt, sample_03.txt</td>
+							</tr>
+						
+						</tbody>
+					</table></div>
+					
+						<div class="panel panel-default"><table class="table table-bordered table-striped th-center">
+							<thead>
+							<tr>
+								<th>ケース名</th>
+								<th>結果</th>
+								<th>実行時間</th>
+								<th>メモリ</th>
+							</tr>
+							</thead>
+							<tbody>
+							
+							<tr>
+								<td class="text-center">hand_01.txt</td>
+								
+									<td class="text-center"><span class='label label-success' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="正解">AC</span></td>
+									<td class="text-right">71 ms</td>
+									<td class="text-right">14152 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">hand_02.txt</td>
+								
+									<td class="text-center"><span class='label label-success' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="正解">AC</span></td>
+									<td class="text-right">65 ms</td>
+									<td class="text-right">14152 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">max_01.txt</td>
+								
+									<td class="text-center"><span class='label label-warning' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="不正解">WA</span></td>
+									<td class="text-right">1284 ms</td>
+									<td class="text-right">99720 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">random_01.txt</td>
+								
+									<td class="text-center"><span class='label label-success' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="正解">AC</span></td>
+									<td class="text-right">188 ms</td>
+									<td class="text-right">70672 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">random_02.txt</td>
+								
+									<td class="text-center"><span class='label label-warning' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="不正解">WA</span></td>
+									<td class="text-right">193 ms</td>
+									<td class="text-right">22028 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">random_03.txt</td>
+								
+									<td class="text-center"><span class='label label-warning' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="不正解">WA</span></td>
+									<td class="text-right">1663 ms</td>
+									<td class="text-right">146032 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">random_04.txt</td>
+								
+									<td class="text-center"><span class='label label-warning' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="不正解">WA</span></td>
+									<td class="text-right">365 ms</td>
+									<td class="text-right">23912 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">random_05.txt</td>
+								
+									<td class="text-center"><span class='label label-warning' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="実行時間制限超過">TLE</span></td>
+									<td class="text-right">2213 ms</td>
+									<td class="text-right">182512 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">random_06.txt</td>
+								
+									<td class="text-center"><span class='label label-warning' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="不正解">WA</span></td>
+									<td class="text-right">1028 ms</td>
+									<td class="text-right">50508 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">random_11.txt</td>
+								
+									<td class="text-center"><span class='label label-success' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="正解">AC</span></td>
+									<td class="text-right">64 ms</td>
+									<td class="text-right">14032 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">random_12.txt</td>
+								
+									<td class="text-center"><span class='label label-success' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="正解">AC</span></td>
+									<td class="text-right">69 ms</td>
+									<td class="text-right">14252 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">sample_01.txt</td>
+								
+									<td class="text-center"><span class='label label-success' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="正解">AC</span></td>
+									<td class="text-right">66 ms</td>
+									<td class="text-right">14204 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">sample_02.txt</td>
+								
+									<td class="text-center"><span class='label label-success' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="正解">AC</span></td>
+									<td class="text-right">66 ms</td>
+									<td class="text-right">14156 KB</td>
+								
+							</tr>
+							
+							<tr>
+								<td class="text-center">sample_03.txt</td>
+								
+									<td class="text-center"><span class='label label-success' aria-hidden='true' data-toggle='tooltip' data-placement='top' title="正解">AC</span></td>
+									<td class="text-right">62 ms</td>
+									<td class="text-right">14296 KB</td>
+								
+							</tr>
+							
+							</tbody>
+						</table></div>
+					
+				
+			
+		</div>
+
+		
+	
+</div>
+
+
+
+
+
+
+
+		
+			<hr>
+			
+			
+			
+<div class="a2a_kit a2a_kit_size_20 a2a_default_style pull-right" data-a2a-url="https://atcoder.jp/contests/abc176/submissions/16148321?lang=ja" data-a2a-title="提出 #16148321 - AtCoder Beginner Contest 176">
+	<a class="a2a_button_facebook"></a>
+	<a class="a2a_button_twitter"></a>
+	
+		<a class="a2a_button_hatena"></a>
+	
+	<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+</div>
+
+		
+		<script async src="//static.addtoany.com/menu/page.js"></script>
+		
+	</div> 
+	<hr>
+</div> 
+
+	<div class="container" style="margin-bottom: 80px;">
+			<footer class="footer">
+			
+				<ul>
+					<li><a href="/contests/abc176/rules">ルール</a></li>
+					<li><a href="/contests/abc176/glossary">用語集</a></li>
+					
+				</ul>
+			
+			<ul>
+				<li><a href="/tos">利用規約</a></li>
+				<li><a href="/privacy">プライバシーポリシー</a></li>
+				<li><a href="/personal">個人情報保護方針</a></li>
+				<li><a href="/company">企業情報</a></li>
+				<li><a href="/faq">よくある質問</a></li>
+				<li><a href="/contact">お問い合わせ</a></li>
+				<li><a href="/documents/request">資料請求</a></li>
+			</ul>
+			<div class="text-center">
+					<small id="copyright">Copyright Since 2012 &copy;<a href="http://atcoder.co.jp">AtCoder Inc.</a> All rights reserved.</small>
+			</div>
+			</footer>
+	</div>
+	<p id="fixed-server-timer" class="contest-timer"></p>
+	<div id="scroll-page-top" style="display:none;"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> ページトップ</div>
+
+</body>
+</html>
+

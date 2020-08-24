@@ -4,12 +4,13 @@ import "time"
 
 // A Submission represents a submission for a problem
 type Submission struct {
-	ID          int       // submission's ID (ex. "15593535")
-	Task        *Task     // task which the submission belongs to
-	Time        int       // time consumption [ms]
-	Memory      int       // memory consumption [KB]
-	Judge       string    // a judge status of the submission
-	SubmittedAt time.Time // submission time
+	ID          int            // submission's ID (ex. "15593535")
+	Task        *Task          // task which the submission belongs to
+	Time        int            // time consumption [ms]
+	Memory      int            // memory consumption [KB]
+	Judge       string         // a judge status of the submission
+	SubmittedAt time.Time      // submission time
+	Cases       map[string]int // case count by judge result (ex. {"AC": 7, "WA": 4})
 }
 
 // NewSubmission creates a instance of Submission.

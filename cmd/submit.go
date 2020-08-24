@@ -68,6 +68,14 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 		}
 	}
 	if submission.Judge != "AC" {
+		if err := ac.FetchSubmissionDetail(submission); err != nil {
+			return writeError("Failed to get judge detail: %s", err)
+		}
+		var js []string
+		for status, count := range submission.Cases {
+			js = append(js, fmt.Sprintf("%sx%d", status, count))
+		}
+		fmt.Println(strings.Join(js, " "))
 		fmt.Printf("See https://atcoder.jp/contests/%s/submissions/%d for detail.\n",
 			task.Contest.ID, submission.ID)
 	}

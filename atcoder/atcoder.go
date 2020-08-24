@@ -288,6 +288,57 @@ func (ac *AtCoder) PollSubmissionStatus(sub *Submission) (int, error) {
 	return judge.Interval, nil
 }
 
+// FetchSubmissionDetail gets submission's case count by judge result
+// and inject them to sub.Cases
+func (ac *AtCoder) FetchSubmissionDetail(sub *Submission) error {
+	path := fmt.Sprintf("/contests/%s/submissions/%d", sub.Task.Contest.ID, sub.ID)
+	resp, err := ac.client.DoGet(path, 200)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var h4 *goquery.Selection
+	doc.Find("h4").EachWithBreak(func(i int, h *goquery.Selection) bool {
+		// MEMO: This code depends on LangJa
+		if h.Text() == "ジャッジ結果" {
+			h4 = h
+			return false
+		}
+		return true
+	})
+	if h4 == nil {
+		return nil
+	}
+	if h4.Next().Find("thead").Length() == 0 {
+		// Judge result table has NOT thead => in contest
+		cases := map[string]int{}
+		// tbody actually don't exist in real html, but goquery add them with html5 way
+		h4.Next().Find("table > tbody > tr > td > table").Eq(1).Find("tbody > tr").
+			Each(func(i int, tr *goquery.Selection) {
+				tds := tr.Find("td")
+				label := tds.Eq(0).Text()
+				count, _ := strconv.Atoi(strings.Split(tds.Eq(1).Text(), " ")[1])
+				cases[label] = cases[label] + count
+			})
+		sub.Cases = cases
+	} else {
+		// Judge result table has thead => not in contest
+		cases := map[string]int{}
+		h4.Next().Next().Find("table > tbody > tr").Each(func(i int, tr *goquery.Selection) {
+			label := tr.Find("span").Text()
+			cases[label] = cases[label] + 1
+		})
+		sub.Cases = cases
+	}
+
+	return nil
+}
+
 // FetchVirtualStartTime gets virtual participation start time of contestID's contest
 // It returns nil if login user does not participate virtual contest
 func (ac *AtCoder) FetchVirtualStartTime(contestID string) (*time.Time, error) {
