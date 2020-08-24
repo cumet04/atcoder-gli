@@ -129,7 +129,7 @@ func (rt *StaticRoundTripper) RoundTrip(req *http.Request) (*http.Response, erro
 	if rt.pattern == "" {
 		filename = "index.html"
 	} else {
-		filename = fmt.Sprintf("index.%s.html", rt.pattern)
+		filename = fmt.Sprintf("index.%s.html.case", rt.pattern)
 	}
 	file, err := os.Open(filepath.Join(htmlDir, req.URL.Path, filename))
 	if err != nil {

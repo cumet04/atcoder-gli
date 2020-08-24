@@ -2,7 +2,8 @@
 -----
 
 ### テスト用html追加時
-* URIと同じ名前のディレクトリ + `index.html`（および`index.PATTERN.html`）とする
+* URIと同じ名前のディレクトリ + `index.html.case`（および`index.PATTERN.html.case`）とする
+  - 末尾の`.case`はgithubのlanguages統計を正しくするためのダミー拡張子
   - 同一URIに対して複数パターン用意する場合や想定ケースを明示したい場合は`PATTERN`を適当に指定する
 * URLと内容は基本的にリアルなものにしておく; 実物と比較できるため
 
