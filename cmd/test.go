@@ -62,12 +62,6 @@ type commandEnv struct {
 	ScriptFile string
 }
 
-type testResult struct {
-	Judge  string
-	Output string
-	Status int
-}
-
 func runTest(cmd *cobra.Command, args []string) int {
 	justrun, err := cmd.Flags().GetBool("justrun")
 	if err != nil {
