@@ -15,12 +15,15 @@ import (
 )
 
 var (
-	config  Config
-	session string
+	config         Config
+	session        string
+	packageVersion string
+	packageCommit  string
 
 	rootCmd = &cobra.Command{
-		Use:   "acg",
-		Short: "accoder-cli on go",
+		Use:     "acg",
+		Short:   "accoder-cli on go",
+		Version: fmt.Sprintf("%s (%s)", packageVersion, packageCommit),
 	}
 )
 
