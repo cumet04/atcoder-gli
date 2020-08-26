@@ -2,7 +2,8 @@ before:
   hooks:
     - go mod download
 builds:
-  - main: ./acg/main.go
+  - binary: acg
+    main: ./acg/main.go
     ldflags:
       - -s -w
       - -X atcoder-gli/cmd.packageVersion={{.Version}}
@@ -15,11 +16,6 @@ builds:
       - amd64
     env:
       - CGO_ENABLED=0
-archives:
-  - format: binary
-    format_overrides:
-      - goos: windows
-        format: zip
 checksum:
   name_template: "checksums.txt"
 changelog:
