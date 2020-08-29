@@ -160,7 +160,9 @@ func execTestWithJudge(ctx context.Context, command, infile, outfile string) err
 		} else {
 			fmt.Fprintln(colorable.NewColorableStdout(), aurora.Red("WA"))
 			fmt.Println("expected output:")
-			fmt.Println(expected)
+			fmt.Println(strings.TrimSuffix(expected, "\n"))
+			fmt.Println("actual output:")
+			fmt.Println(strings.TrimSuffix(actual, "\n"))
 		}
 	case -1:
 		return err
