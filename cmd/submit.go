@@ -78,9 +78,13 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 		}
 		sort.Strings(keys)
 		var js []string
+		total := 0
 		for _, key := range keys {
-			js = append(js, fmt.Sprintf("%sx%d", key, submission.Cases[key]))
+			count := submission.Cases[key]
+			total += count
+			js = append(js, fmt.Sprintf("%sx%d", key, count))
 		}
+		js = append(js, fmt.Sprintf("/%d", total))
 		fmt.Println(strings.Join(js, " "))
 		fmt.Printf("See https://atcoder.jp/contests/%s/submissions/%d for detail.\n",
 			task.Contest.ID, submission.ID)
