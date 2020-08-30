@@ -72,20 +72,7 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 		if err := ac.FetchSubmissionDetail(submission); err != nil {
 			return writeError("Failed to get judge detail: %s", err)
 		}
-		var keys []string
-		for status := range submission.Cases {
-			keys = append(keys, status)
-		}
-		sort.Strings(keys)
-		var js []string
-		total := 0
-		for _, key := range keys {
-			count := submission.Cases[key]
-			total += count
-			js = append(js, fmt.Sprintf("%sx%d", key, count))
-		}
-		js = append(js, fmt.Sprintf("/%d", total))
-		fmt.Println(strings.Join(js, " "))
+		fmt.Println(formatJudgeCases(submission.Cases))
 		fmt.Printf("See https://atcoder.jp/contests/%s/submissions/%d for detail.\n",
 			task.Contest.ID, submission.ID)
 	}
@@ -164,4 +151,23 @@ func waitForJudge(ac *atcoder.AtCoder, s *atcoder.Submission) error {
 		time.Sleep(time.Duration(interval) * time.Millisecond)
 	}
 	return nil
+}
+
+func formatJudgeCases(cases map[string]int) string {
+	var keys []string
+	for status := range cases {
+		keys = append(keys, status)
+	}
+	sort.Strings(keys)
+
+	var strs []string
+	total := 0
+	for _, key := range keys {
+		count := cases[key]
+		total += count
+		strs = append(strs, fmt.Sprintf("%sx%d", key, count))
+	}
+	strs = append(strs, fmt.Sprintf("/%d", total))
+
+	return strings.Join(strs, " ")
 }
