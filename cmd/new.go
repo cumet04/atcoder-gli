@@ -30,7 +30,7 @@ For instance, created directory tree is:
 abc100/
 - .contest.json
 + a/
-	- main.go // if skeleton_file is set in config
+	- main.go // if template is set in config
 	+ samples/
 		- sample_1.in
 		- sample_1.out
@@ -70,7 +70,7 @@ func runNew(cmd *cobra.Command, args []string) int {
 		t.Directory = taskDir
 		t.SampleDir = config.SampleDir()
 
-		skel, err := config.SkeletonFilePath()
+		skel, err := config.TemplateFilePath()
 		if err != nil {
 			return writeError("%s", err)
 		}
@@ -78,7 +78,7 @@ func runNew(cmd *cobra.Command, args []string) int {
 			filename := filepath.Base(skel)
 			err := copyFile(skel, filepath.Join(taskPath, filename))
 			if err != nil {
-				return writeError("Failed to copy skeleton file: %s\n", err)
+				return writeError("Failed to copy template file: %s\n", err)
 			}
 			t.Script = filename
 		}

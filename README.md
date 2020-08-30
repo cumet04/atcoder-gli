@@ -5,7 +5,6 @@ This is inspired by [atcoder-cli](https://github.com/Tatamo/atcoder-cli).
 
 ### TODO
 * config document
-
 ### Usage
 
 #### login
@@ -23,9 +22,10 @@ Flags:
   -h, --help   help for login
 
 Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --language string     language id used as submit code's language
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### new
@@ -33,30 +33,32 @@ Global Flags:
 Create new directory for CONTEST_ID and setup directories/files.
 Fetch contest info from AtCoder website and download sample test cases for tasks.
 
-For instance, create directory tree is:
-abc100/
-- .contest.json
-+ a/
-  - main.go // if skeleton_file is set in config
-  + samples/
-    - sample_1.in
-    - sample_1.out
-    - sample_2.in
-    - sample_2.out
-+ b/ ...
-+ c/ ...
-...
-
 Usage:
   acg new CONTEST_ID [flags]
+
+Examples:
+  For instance, created directory tree is:
+  abc100/
+  - .contest.json
+  + a/
+    - main.go // if template is set in config
+    + samples/
+      - sample_1.in
+      - sample_1.out
+      - sample_2.in
+      - sample_2.out
+  + b/ ...
+  + c/ ...
+  ...
 
 Flags:
   -h, --help   help for new
 
 Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --language string     language id used as submit code's language
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### config
@@ -78,9 +80,10 @@ Flags:
   -h, --help   help for config
 
 Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --language string     language id used as submit code's language
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 
 Use "acg config [command] --help" for more information about a command.
 ```
@@ -101,35 +104,38 @@ Flags:
   -h, --help   help for lang
 
 Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --language string     language id used as submit code's language
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### submit
 ```
-Submit a FILE as answer for a task, and wait the judge is complete.
-If FILE is omitted, it looks for a file named config's skeleton_file name, in current directory.
-Target task is guessed from directory where FILE is in.
+Submit a file as answer for a task, and wait the judge is complete.
+Target file is determined by looking for a file named config's template name, in current directory.
+Target task is guessed from current directory.
 Language is read from config value: 'language'.
 
-ex 1. FILE = abc100/c/main.go
--> submit abc100/c/main.go for abc100's c task
-
-ex 2. FILE is none, run in abc100/b, skeleton_file = main.rb
--> submit abc100/b/main.rb for abc100's b task
-
 Usage:
-  acg submit [FILE] [flags]
+  acg submit [flags]
+
+Aliases:
+  submit, s
+
+Examples:
+  ex 1. run in abc100/b, template = main.rb
+  -> submit abc100/b/main.rb for abc100's b task
 
 Flags:
   -h, --help     help for submit
       --nowait   exit without waiting for judge complete
 
 Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --language string     language id used as submit code's language
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### session
@@ -146,9 +152,10 @@ Flags:
   -h, --help   help for session
 
 Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --language string     language id used as submit code's language
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### open
@@ -165,9 +172,10 @@ Flags:
   -h, --help   help for open
 
 Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --language string     language id used as submit code's language
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### show
@@ -187,7 +195,8 @@ Flags:
   -h, --help   help for show
 
 Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --language string     language id used as submit code's language
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 ```

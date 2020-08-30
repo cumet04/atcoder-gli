@@ -23,12 +23,12 @@ func init() {
 		Short:   "Submit file to a task",
 		Long: `
 Submit a file as answer for a task, and wait the judge is complete.
-Target file is determined by looking for a file named config's skeleton_file name, in current directory.
+Target file is determined by looking for a file named config's template name, in current directory.
 Target task is guessed from current directory.
 Language is read from config value: 'language'.
 		`,
 		Example: `
-ex 1. run in abc100/b, skeleton_file = main.rb
+ex 1. run in abc100/b, template = main.rb
 -> submit abc100/b/main.rb for abc100's b task
 		`})
 	cmd.Flags().Bool("nowait", false, "exit without waiting for judge complete")

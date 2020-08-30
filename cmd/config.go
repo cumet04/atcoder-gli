@@ -46,9 +46,9 @@ func configDefinition() []map[string]string {
 - name: sample_dir
 	default: tests
 	usage: directory name where sample in/out files are stored in
-- name: skeleton_file
+- name: template
 	default: ""
-	usage: skeleton file name that is copied to task directory in 'acg new'
+	usage: template file name that is copied to task directory in 'acg new'
 - name: language
 	default: ""
 	usage: language id used as submit code's language
@@ -89,9 +89,9 @@ func (c *Config) SampleDir() string {
 	return c.viper.GetString("sample_dir")
 }
 
-// SkeletonFile returns current skeleton_file value of config
-func (c *Config) SkeletonFile() string {
-	return c.viper.GetString("skeleton_file")
+// Template returns current template value of config
+func (c *Config) Template() string {
+	return c.viper.GetString("template")
 }
 
 // Language returns current language value of config
@@ -118,10 +118,10 @@ func (c *Config) SaveConfig() error {
 	return c.viper.WriteConfigAs(filepath.Join(configDir(), "config.yml"))
 }
 
-// SkeletonFilePath resolves absolute path of skeleton file.
-// This regards SkeletonFile as relative path from CWD or config directory.
-func (c *Config) SkeletonFilePath() (string, error) {
-	skel := c.SkeletonFile()
+// TemplateFilePath resolves absolute path of template file.
+// This regards Template as relative path from CWD or config directory.
+func (c *Config) TemplateFilePath() (string, error) {
+	skel := c.Template()
 	if skel == "" {
 		return "", nil
 	}
@@ -141,7 +141,7 @@ func (c *Config) SkeletonFilePath() (string, error) {
 	}
 
 	return "", errors.New(fmt.Sprintf(
-		"skeleton_file is specified but the file is not found in %s, %s", file1, file2,
+		"template is specified but the file is not found in %s, %s", file1, file2,
 	))
 }
 

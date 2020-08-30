@@ -39,7 +39,7 @@ In all cases, Current directory tree is:
 		- sample-1.out
 		- sample-2.in
 		- sample-2.out
-and config.command="ruby ./{{.ScriptFile}}", config.skeleton_file="main.rb".
+and config.command="ruby ./{{.ScriptFile}}", config.template="main.rb".
 
 ex1. 'acg test'
 -> run 'ruby main.rb' with stdin(sample-1.in) and judge stdout with sample-1.out.
@@ -96,7 +96,7 @@ func runTest(cmd *cobra.Command, args []string) int {
 
 	// generate command string from template
 	cenv := commandEnv{
-		ScriptFile: filepath.Base(config.SkeletonFile()),
+		ScriptFile: task.Script,
 	}
 	tmpl, err := template.New("command").Parse(config.Command())
 	if err != nil {
