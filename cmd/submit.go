@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -71,9 +72,14 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 		if err := ac.FetchSubmissionDetail(submission); err != nil {
 			return writeError("Failed to get judge detail: %s", err)
 		}
+		var keys []string
+		for status := range submission.Cases {
+			keys = append(keys, status)
+		}
+		sort.Strings(keys)
 		var js []string
-		for status, count := range submission.Cases {
-			js = append(js, fmt.Sprintf("%sx%d", status, count))
+		for _, key := range keys {
+			js = append(js, fmt.Sprintf("%sx%d", key, submission.Cases[key]))
 		}
 		fmt.Println(strings.Join(js, " "))
 		fmt.Printf("See https://atcoder.jp/contests/%s/submissions/%d for detail.\n",
