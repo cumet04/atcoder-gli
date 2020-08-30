@@ -53,15 +53,17 @@ func runShow(cmd *cobra.Command, args []string) int {
 	}
 
 	var remaining time.Duration
-	t, err := ac.FetchVirtualStartTime(id)
-	if err != nil {
-		return writeError("Failed to fetch virtual participate info: %s", err)
-	}
-	if t != nil && time.Now().After(*t) {
-		progress := time.Now().Sub(*t)
-		remaining = contest.Duration - progress
-	} else if contest.Registered {
+	if contest.Registered {
 		remaining = time.Now().Sub(contest.StartAt)
+	} else {
+		t, err := ac.FetchVirtualStartTime(id)
+		if err != nil {
+			return writeError("Failed to fetch virtual participate info: %s", err)
+		}
+		if t != nil && time.Now().After(*t) {
+			progress := time.Now().Sub(*t)
+			remaining = contest.Duration - progress
+		}
 	}
 
 	fmt.Printf("%s (%s)\n", contest.Title, contest.ID)
