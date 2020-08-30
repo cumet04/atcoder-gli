@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -43,18 +44,19 @@ type Config struct {
 func configDefinition() []map[string]string {
 	yml := `
 - name: sample_dir
-  default: tests
-  usage: directory name where sample in/out files are stored in
+	default: tests
+	usage: directory name where sample in/out files are stored in
 - name: skeleton_file
-  default: ""
-  usage: skeleton file name that is copied to task directory in 'acg new'
+	default: ""
+	usage: skeleton file name that is copied to task directory in 'acg new'
 - name: language
-  default: ""
-  usage: language id used as submit code's language
+	default: ""
+	usage: language id used as submit code's language
 - name: command
-  default: "./{{.ScriptFile}}"
-  usage: "command template that runs in 'acg test'"
+	default: "./{{.ScriptFile}}"
+	usage: "command template that runs in 'acg test'"
 `
+	yml = strings.ReplaceAll(yml, "\t", "  ")
 	var m []map[string]string
 	if err := yaml.Unmarshal([]byte(yml), &m); err != nil {
 		panic(err)
