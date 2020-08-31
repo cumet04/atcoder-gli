@@ -41,13 +41,13 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 		return ret
 	}
 
-	lang := config.Language()
+	lang := task.Contest.Language
 	if lang == "" {
 		return writeError("Default language is not set.\n" +
 			"Retry this after set it with `config lang` command.")
 	}
 
-	path := filepath.Join(cwd(), task.Script)
+	path := filepath.Join(cwd(), task.Contest.Script)
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return writeError("Failed to read script file: %s", err)

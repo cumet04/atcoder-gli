@@ -51,6 +51,15 @@ func runNew(cmd *cobra.Command, args []string) int {
 	if err != nil {
 		return writeError("Failed to fetch contest info: %s", err)
 	}
+	contest.SampleDir = config.SampleDir()
+	contest.Language = config.Language()
+	contest.Command = config.Command()
+	tmpl, err := config.TemplateFilePath()
+	if err != nil {
+		return writeError("%s", err)
+	}
+	contest.Script = filepath.Base(tmpl)
+
 	contestDir := contest.ID
 	if _, err := os.Stat(contestDir); err == nil {
 		fmt.Printf("Contest directory, %s, is already exists. abort.\n", contestDir)
@@ -68,19 +77,12 @@ func runNew(cmd *cobra.Command, args []string) int {
 			return writeError("Failed to create sample directory: %s", err)
 		}
 		t.Directory = taskDir
-		t.SampleDir = config.SampleDir()
 
-		skel, err := config.TemplateFilePath()
-		if err != nil {
-			return writeError("%s", err)
-		}
-		if skel != "" {
-			filename := filepath.Base(skel)
-			err := copyFile(skel, filepath.Join(taskPath, filename))
+		if tmpl != "" {
+			err := copyFile(tmpl, filepath.Join(taskPath, contest.Script))
 			if err != nil {
 				return writeError("Failed to copy template file: %s\n", err)
 			}
-			t.Script = filename
 		}
 
 		samples, err := ac.FetchSampleInout(t.Contest.ID, t.ID)

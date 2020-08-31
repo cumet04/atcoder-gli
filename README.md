@@ -5,6 +5,7 @@ This is inspired by [atcoder-cli](https://github.com/Tatamo/atcoder-cli).
 
 ### TODO
 * config document
+
 ### Usage
 
 #### login
@@ -22,7 +23,7 @@ Flags:
   -h, --help   help for login
 
 Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
@@ -55,7 +56,7 @@ Flags:
   -h, --help   help for new
 
 Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
@@ -80,7 +81,7 @@ Flags:
   -h, --help   help for config
 
 Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
@@ -104,7 +105,7 @@ Flags:
   -h, --help   help for lang
 
 Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
@@ -132,7 +133,7 @@ Flags:
       --nowait   exit without waiting for judge complete
 
 Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
@@ -152,7 +153,7 @@ Flags:
   -h, --help   help for session
 
 Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
@@ -172,7 +173,7 @@ Flags:
   -h, --help   help for open
 
 Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
@@ -195,7 +196,7 @@ Flags:
   -h, --help   help for show
 
 Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.ScriptFile}}")
+      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'

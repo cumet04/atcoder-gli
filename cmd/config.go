@@ -53,7 +53,7 @@ func configDefinition() []map[string]string {
 	default: ""
 	usage: language id used as submit code's language
 - name: command
-	default: "./{{.ScriptFile}}"
+	default: "./{{.Script}}"
 	usage: "command template that runs in 'acg test'"
 `
 	yml = strings.ReplaceAll(yml, "\t", "  ")
