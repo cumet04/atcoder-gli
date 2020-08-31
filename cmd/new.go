@@ -15,17 +15,16 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(
-		newCommand(&commandArgs{
-			Use:   "new CONTEST_ID",
-			Args:  cobra.MaximumNArgs(1),
-			Run:   runNew,
-			Short: "Create and setup new directory for a contest",
-			Long: `
+	cmd := newCommand(&commandArgs{
+		Use:   "new CONTEST_ID",
+		Args:  cobra.MaximumNArgs(1),
+		Run:   runNew,
+		Short: "Create and setup new directory for a contest",
+		Long: `
 Create new directory for CONTEST_ID and setup directories/files.
 Fetch contest info from AtCoder website and download sample test cases for tasks.
 			`,
-			Example: `
+		Example: `
 For instance, created directory tree is:
 abc100/
 - .contest.json
@@ -39,7 +38,18 @@ abc100/
 + b/ ...
 + c/ ...
 ...
-			`}))
+		`})
+
+	for _, param := range configDefinition() {
+		pf := cmd.PersistentFlags()
+		pf.String(
+			param["name"],
+			param["default"],
+			param["usage"],
+		)
+		config.viper.BindPFlag(param["name"], pf.Lookup(param["name"]))
+	}
+	rootCmd.AddCommand(cmd)
 }
 
 func runNew(cmd *cobra.Command, args []string) int {

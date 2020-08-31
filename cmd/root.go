@@ -12,13 +12,16 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
-	config         Config
 	session        string
 	packageVersion string
 	packageCommit  string
+	config         = Config{
+		viper: viper.New(),
+	}
 
 	rootCmd = &cobra.Command{
 		Use:     "acg",
@@ -69,7 +72,11 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	config = *NewConfig(configDir(), rootCmd)
+
+	config.viper.SetConfigName("config")
+	config.viper.SetConfigType("yml")
+	config.viper.AddConfigPath(configDir())
+	config.viper.ReadInConfig()
 
 	_, ok := os.LookupEnv("ATCODER_GLI_HTTP_DUMP")
 	atcoder.HTTPDump = ok

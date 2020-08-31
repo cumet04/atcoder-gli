@@ -64,26 +64,6 @@ func configDefinition() []map[string]string {
 	return m
 }
 
-// NewConfig creates a config instance with cobra params
-func NewConfig(path string, cmd *cobra.Command) *Config {
-	v := viper.New()
-	v.SetConfigName("config")
-	v.SetConfigType("yml")
-	v.AddConfigPath(path)
-	for _, param := range configDefinition() {
-		pf := rootCmd.PersistentFlags()
-		pf.String(
-			param["name"],
-			param["default"],
-			param["usage"],
-		)
-		v.BindPFlag(param["name"], pf.Lookup(param["name"]))
-	}
-	v.ReadInConfig()
-
-	return &Config{viper: v}
-}
-
 // SampleDir returns current sample_dir value of config
 func (c *Config) SampleDir() string {
 	return c.viper.GetString("sample_dir")

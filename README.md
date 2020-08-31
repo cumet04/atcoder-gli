@@ -21,12 +21,6 @@ Usage:
 
 Flags:
   -h, --help   help for login
-
-Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
-      --language string     language id used as submit code's language
-      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
-      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### new
@@ -53,10 +47,8 @@ Examples:
   ...
 
 Flags:
-  -h, --help   help for new
-
-Global Flags:
       --command string      command template that runs in 'acg test' (default "./{{.Script}}")
+  -h, --help                help for new
       --language string     language id used as submit code's language
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
@@ -80,12 +72,6 @@ Available Commands:
 Flags:
   -h, --help   help for config
 
-Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
-      --language string     language id used as submit code's language
-      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
-      --template string     template file name that is copied to task directory in 'acg new'
-
 Use "acg config [command] --help" for more information about a command.
 ```
 
@@ -103,12 +89,6 @@ Usage:
 
 Flags:
   -h, --help   help for lang
-
-Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
-      --language string     language id used as submit code's language
-      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
-      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### submit
@@ -131,12 +111,6 @@ Examples:
 Flags:
   -h, --help     help for submit
       --nowait   exit without waiting for judge complete
-
-Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
-      --language string     language id used as submit code's language
-      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
-      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### session
@@ -151,12 +125,6 @@ Usage:
 
 Flags:
   -h, --help   help for session
-
-Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
-      --language string     language id used as submit code's language
-      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
-      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### open
@@ -171,12 +139,6 @@ Usage:
 
 Flags:
   -h, --help   help for open
-
-Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
-      --language string     language id used as submit code's language
-      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
-      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### show
@@ -194,10 +156,4 @@ Usage:
 
 Flags:
   -h, --help   help for show
-
-Global Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
-      --language string     language id used as submit code's language
-      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
-      --template string     template file name that is copied to task directory in 'acg new'
 ```
