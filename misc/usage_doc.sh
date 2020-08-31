@@ -2,6 +2,9 @@
 
 cd $(dirname $0)/..
 
+EXEC=./usage_doc_tmp_build
+go build -o $EXEC acg/main.go
+
 echo "### Usage"
 for cmd in \
   login \
@@ -16,6 +19,8 @@ for cmd in \
   echo ""
   echo "#### ${cmd}"
   echo '```'
-  go run acg/main.go help $cmd
+  $EXEC help $cmd
   echo '```'
 done
+
+rm $EXEC
