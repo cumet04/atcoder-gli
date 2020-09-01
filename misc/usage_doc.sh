@@ -10,7 +10,8 @@ for cmd in \
   login \
   new \
   config \
-  "config lang" \
+  "config wizard" \
+  lang \
   submit \
   session \
   open \

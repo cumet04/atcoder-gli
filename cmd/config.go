@@ -43,18 +43,26 @@ type Config struct {
 
 func configDefinition() []map[string]string {
 	yml := `
-- name: sample_dir
-	default: tests
-	usage: directory name where sample in/out files are stored in
-- name: template
-	default: ""
-	usage: template file name that is copied to task directory in 'acg new'
 - name: language
 	default: ""
-	usage: language id used as submit code's language
+	short: language id used as submit code's language
+	long: |
+		TODO
+- name: template
+	default: ""
+	short: template file name that is copied to task directory in 'acg new'
+	long: |
+		TODO
 - name: command
 	default: "./{{.Script}}"
-	usage: "command template that runs in 'acg test'"
+	short: "command template that runs in 'acg test'"
+	long: |
+		TODO
+- name: sample_dir
+	default: tests
+	short: directory name where sample in/out files are stored in
+	long: |
+		TODO
 `
 	yml = strings.ReplaceAll(yml, "\t", "  ")
 	var m []map[string]string

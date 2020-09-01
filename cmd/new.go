@@ -45,7 +45,7 @@ abc100/
 		pf.String(
 			param["name"],
 			param["default"],
-			param["usage"],
+			param["short"],
 		)
 		config.viper.BindPFlag(param["name"], pf.Lookup(param["name"]))
 	}

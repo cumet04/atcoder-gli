@@ -132,27 +132,24 @@ func readContestInfo(basepath string) (string, *atcoder.Contest, error) {
 	return "", nil, nil
 }
 
-func prompt(label string, mask bool) (string, error) {
-	var m rune
-	if mask {
-		m = '*'
-	}
+type promptParam struct {
+	Label   string
+	Default string
+	Mask    rune
+}
+
+func prompt(p promptParam) string {
 	prompt := promptui.Prompt{
-		Label: label,
-		Mask:  m,
-		Validate: func(input string) error {
-			if len(input) == 0 {
-				return errors.New("Empty input")
-			}
-			return nil
-		},
+		Label:   p.Label,
+		Mask:    p.Mask,
+		Default: p.Default,
 	}
 
 	result, err := prompt.Run()
 	if err != nil {
 		panic(err)
 	}
-	return result, nil
+	return result
 }
 
 func configDir() string {

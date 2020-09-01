@@ -67,7 +67,7 @@ Usage:
   acg config [command]
 
 Available Commands:
-  lang        Select preferred language for submit
+  wizard      Making config wizard
 
 Flags:
   -h, --help   help for config
@@ -75,20 +75,29 @@ Flags:
 Use "acg config [command] --help" for more information about a command.
 ```
 
-#### config lang
+#### config wizard
 ```
-Search and select preferred language.
-Selected language is saved in config and used when submit code.
-
-You can search language with keyword (prompted) and choose one from them.
-Search targets are all available languages in AtCoder,
-and keyword is case-insensitive.
+Launch wizard for making config file, and interactively setup config parameters.
 
 Usage:
-  acg config lang [flags]
+  acg config wizard [flags]
 
 Flags:
-  -h, --help   help for lang
+  -h, --help   help for wizard
+```
+
+#### lang
+```
+List atcoder's available languages for submit.
+You can also filter languages with keyword (see 'filter' flag).
+
+Usage:
+  acg lang [flags]
+
+Flags:
+  -f, --filter string   filter keyword for list (case-insensitive)
+  -h, --help            help for lang
+      --no-header       Don't print header
 ```
 
 #### submit

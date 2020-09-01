@@ -29,40 +29,36 @@ See also 'acg help session' for current login status.
 func runLogin(cmd *cobra.Command, args []string) int {
 	var user string
 	var pass string
-	var err error
 	if len(args) >= 1 {
 		user = args[0]
 	}
 	if len(args) >= 2 {
 		pass = args[1]
 	}
-	if user == "" {
-		user, err = prompt("Username", false)
-		if err != nil {
-			return writeError("Prompt username failed: %s", err)
-		}
-	}
-	if pass == "" {
-		pass, err = prompt("Password", true)
-		if err != nil {
-			return writeError("Prompt password failed: %s", err)
-		}
-	}
 
 	ac := atcoder.NewAtCoder(cmd.Context(), "")
-	cookie, err := ac.Login(user, pass)
-	if err != nil {
-		return writeError("%s", err)
-	}
-	if err = saveSession(cookie); err != nil {
-		return writeError("Failed to save session: %s", err)
+	if err := execLogin(ac, user, pass); err != nil {
+		return writeError("Login sequence failed: %s", err)
 	}
 
 	fmt.Println("Login succeeded")
 	return 0
 }
 
-func saveSession(cookie string) error {
+func execLogin(ac *atcoder.AtCoder, user, pass string) error {
+	if user == "" {
+		user = prompt(promptParam{Label: "Username"})
+	}
+	if pass == "" {
+		pass = prompt(promptParam{Label: "Password", Mask: '*'})
+	}
+
+	cookie, err := ac.Login(user, pass)
+	if err != nil {
+		return err
+	}
+
+	// save session
 	if err := os.MkdirAll(configDir(), 0755); err != nil {
 		return errors.Wrapf(err, "Cannot create session directory: %s", configDir())
 	}
