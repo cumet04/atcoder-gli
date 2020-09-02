@@ -41,6 +41,8 @@ type Config struct {
 	viper *viper.Viper
 }
 
+var configFilePath = filepath.Join(configDir(), "config.yml")
+
 func configDefinition() []map[string]string {
 	yml := `
 - name: language
@@ -100,10 +102,11 @@ func (c *Config) WriteLanguage(langID string) error {
 
 // SaveConfig write config to default config path
 func (c *Config) SaveConfig() error {
-	if err := os.MkdirAll(configDir(), 0755); err != nil {
-		return errors.Wrapf(err, "Cannot create config directory: %s", configDir())
+	dir := filepath.Dir(configFilePath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return errors.Wrapf(err, "Cannot create config directory: %s", dir)
 	}
-	return c.viper.WriteConfigAs(filepath.Join(configDir(), "config.yml"))
+	return c.viper.WriteConfigAs(configFilePath)
 }
 
 // TemplateFilePath resolves absolute path of template file.

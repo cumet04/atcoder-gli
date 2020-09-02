@@ -28,7 +28,7 @@ func runWizard(cmd *cobra.Command, args []string) int {
 	if err := config.SaveConfig(); err != nil {
 		return writeError("Failed to save config to file: %s", err)
 	}
-	fmt.Println("Config file created")
+	fmt.Printf("Config file is saved at %s\n", configFilePath)
 
 	return 0
 }
@@ -40,7 +40,6 @@ func execConfigWizard(ac *atcoder.AtCoder) error {
 		long := param["long"]
 		fmt.Printf("* %s\n", name)
 		fmt.Println(long)
-		fmt.Print("? ")
 
 		var value string
 		switch name {
@@ -70,6 +69,7 @@ func execConfigWizard(ac *atcoder.AtCoder) error {
 				Default: current,
 			})
 		}
+		fmt.Println()
 
 		config.viper.Set(name, value)
 	}
