@@ -47,7 +47,7 @@ func configDefinition() []map[string]string {
 	yml := `
 - name: language
 	default: ""
-	short: language id used as submit code's language
+	short: submit code's language
 	long: |
 		TODO
 - name: template
@@ -84,9 +84,10 @@ func (c *Config) Template() string {
 	return c.viper.GetString("template")
 }
 
-// Language returns current language value of config
+// Language returns current language value (ID) of config
 func (c *Config) Language() string {
-	return c.viper.GetString("language")
+	raw := c.viper.GetString("language")
+	return strings.Split(raw, " ")[0]
 }
 
 // Command returns command value of config

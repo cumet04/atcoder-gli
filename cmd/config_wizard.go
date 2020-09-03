@@ -61,7 +61,7 @@ func execConfigWizard(ac *atcoder.AtCoder) error {
 				if err != nil {
 					panic(err)
 				}
-				value = list[index].ID
+				value = fmt.Sprintf("%s %s", list[index].ID, list[index].Label)
 			}
 		default:
 			value = prompt(promptParam{
