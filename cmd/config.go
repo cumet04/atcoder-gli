@@ -94,12 +94,6 @@ func (c *Config) Command() string {
 	return c.viper.GetString("command")
 }
 
-// WriteLanguage set id to language, and save it to file
-func (c *Config) WriteLanguage(langID string) error {
-	c.viper.Set("language", langID)
-	return c.SaveConfig()
-}
-
 // SaveConfig write config to default config path
 func (c *Config) SaveConfig() error {
 	dir := filepath.Dir(configFilePath)
