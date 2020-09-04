@@ -30,7 +30,7 @@ abc100/
 - .contest.json
 + a/
 	- main.go // if template is set in config
-	+ samples/
+	+ tests/
 		- sample_1.in
 		- sample_1.out
 		- sample_2.in

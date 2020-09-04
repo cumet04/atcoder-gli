@@ -47,25 +47,49 @@ func configDefinition() []map[string]string {
 	yml := `
 - name: language
 	default: ""
-	short: submit code's language
+	short: language ID specified with code submission
 	long: |
-		TODO
+		Language ID specified with code submission.
+		Selectable languages are in AtCoder's submission page, and this parameter's value is a language's (AtCoder internal) ID.
+		Characters after a space included in a value are ignored, so you can leave a memo such as language name.
+	long_ja: |
+		コード提出時に指定する言語種別のID。
+		言語はAtCoderの提出ページにて選択できるもので、このパラメータの値には言語に紐付いた（AtCoder内部の）IDを指定する。
+		値に含まれるスペース以降の文字は無視されるため、言語名などをメモとして残すことができる。
+		'acg wizard'や'acg firststep'では'{ID} {言語名}'のフォーマットで設定される。
 - name: template
 	default: ""
 	short: template file name that is copied to task directory in 'acg new'
 	long: |
-		TODO
+		A template file path that is copied and located at each task directory in contest directory set.
+		This accepts relative path from the config file or acg command's working directory.
+	long_ja: |
+		'acg new'でコンテスト関連ディレクトリを作成する際、各問題ディレクトリに配置されるソースコードのテンプレートファイルのパス。
+		設定ファイルもしくはコマンドの実行ディレクトリからの相対パスで記述する。
 - name: command
 	default: "./{{.Script}}"
-	short: "command template that runs in 'acg test'"
+	short: command template for local test in 'acg test'
 	long: |
-		TODO
+		Command template for local test in 'acg test'.
+		See 'acg test --help' for detail behaviour.
+		Available template value are below:
+		- {{.Script}} : filename of 'template' config value without directory path
+	long_ja: |
+		'acg test'でローカルテストを実行するためのコマンドのテンプレート。
+		動作の詳細は'acg test --help'を参照。
+		テンプレート内で利用可能な値は以下:
+		- {{.Script}} : 'template'設定のうち、ディレクトリを除いたファイル名の部分
 - name: sample_dir
 	default: tests
 	short: directory name where sample in/out files are stored in
 	long: |
-		TODO
+		Directory name where sample in/out files are stored in.
+		'acg new' creates directory with the name in each task directory, and sample in/out files are created in the directory.
+	long_ja: |
+		問題のサンプル入出力ファイルが配置されるディレクトリ名。
+		'acg new'にて、問題ディレクトリの下にこの名前でディレクトリが作成され、そのディレクトリ内にサンプル入出力ファイルが作成される。
 `
+	// TODO: implement for 'long_ja'
 	yml = strings.ReplaceAll(yml, "\t", "  ")
 	var m []map[string]string
 	if err := yaml.Unmarshal([]byte(yml), &m); err != nil {

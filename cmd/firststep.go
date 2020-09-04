@@ -4,6 +4,7 @@ import (
 	"atcoder-gli/atcoder"
 	"fmt"
 
+	"github.com/logrusorgru/aurora/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +23,8 @@ func init() {
 func runFirstStep(cmd *cobra.Command, args []string) int {
 	ac := atcoder.NewAtCoder(cmd.Context(), "")
 
-	fmt.Println("1. Login to atcoder. Input username/password for atcoder.jp")
+	fmt.Println(aurora.Underline(aurora.Bold(
+		"1. Login to atcoder. Input username/password for atcoder.jp")))
 	fmt.Println("Note: Username/Password are not stored, only login session (cookie) is.")
 	fmt.Println("      This step is same as 'acg login'.")
 	if err := execLogin(ac, "", ""); err != nil {
@@ -31,7 +33,8 @@ func runFirstStep(cmd *cobra.Command, args []string) int {
 	fmt.Println("Login succeeded !")
 	fmt.Println("")
 
-	fmt.Println("2. Setup acg config. XXX")
+	fmt.Println(aurora.Underline(aurora.Bold(
+		"2. Setup acg config. XXX")))
 	fmt.Println("Note: You can see default values / descriptions later with 'acg config default'.")
 	fmt.Println("      This step is same as 'acg config wizard'.")
 	if err := execConfigWizard(ac); err != nil {

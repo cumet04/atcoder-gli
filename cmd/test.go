@@ -148,6 +148,7 @@ func execTestWithJudge(ctx context.Context, command, infile, outfile string) err
 	}
 	expected := string(expectedBytes)
 
+	// TODO: This doesn't work on Windows
 	cmd := exec.CommandContext(ctx, "sh", "-c", command)
 	cmd.Stdin = in
 	bytes, err := cmd.CombinedOutput()

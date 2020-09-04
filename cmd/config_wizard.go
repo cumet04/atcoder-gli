@@ -4,6 +4,7 @@ import (
 	"atcoder-gli/atcoder"
 	"fmt"
 
+	"github.com/logrusorgru/aurora/v3"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
@@ -38,8 +39,8 @@ func execConfigWizard(ac *atcoder.AtCoder) error {
 		name := param["name"]
 		current := config.viper.GetString(name)
 		long := param["long"]
-		fmt.Printf("* %s\n", name)
-		fmt.Println(long)
+		fmt.Println(aurora.Sprintf(aurora.Bold("* %s"), name))
+		fmt.Println(" " + long)
 
 		var value string
 		switch name {
