@@ -2,14 +2,12 @@ package atcoder
 
 // A Task represents a task in a contest; ex. abc100_a
 type Task struct {
-	Contest     *Contest     `json:"-"` // contest which the task belongs to
-	ID          string       // task's ID (ex. "abc100_a")
-	Label       string       // task's Label (ex. "A")
-	Title       string       // task's Title (ex. "Happy Birthday!")
-	Directory   string       // on local storage, task's directory relative path from contest directory
-	Script      string       // on local storage, script file name for the task
-	SampleDir   string       // on local storage, sample directory relative path from task directory; config.sample_dir at 'acg new'
-	Submissions []Submission `json:"-"` // submissions that belongs to the task
+	Contest     *Contest     `json:"-"`         // contest which the task belongs to
+	ID          string       `json:"id"`        // task's ID (ex. "abc100_a")
+	Label       string       `json:"label"`     // task's Label (ex. "A")
+	Title       string       `json:"title"`     // task's Title (ex. "Happy Birthday!")
+	Directory   string       `json:"directory"` // on local storage, task's directory relative path from contest directory
+	Submissions []Submission `json:"-"`         // submissions that belongs to the task
 }
 
 // NewTask creates a instance of Task

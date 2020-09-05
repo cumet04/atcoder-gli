@@ -39,7 +39,7 @@ In all cases, Current directory tree is:
 		- sample-1.out
 		- sample-2.in
 		- sample-2.out
-and config.command="ruby ./{{.ScriptFile}}", config.skeleton_file="main.rb".
+and config.command="ruby ./{{.Script}}", config.template="main.rb".
 
 ex1. 'acg test'
 -> run 'ruby main.rb' with stdin(sample-1.in) and judge stdout with sample-1.out.
@@ -59,7 +59,7 @@ ex3. 'acg test --justrun --number 2'
 }
 
 type commandEnv struct {
-	ScriptFile string
+	Script string
 }
 
 func runTest(cmd *cobra.Command, args []string) int {
@@ -77,7 +77,7 @@ func runTest(cmd *cobra.Command, args []string) int {
 		return ret
 	}
 
-	sampleDir := filepath.Join(cwd(), task.SampleDir) // cwd should be task directory if runDeterminTask() is ok
+	sampleDir := filepath.Join(cwd(), task.Contest.SampleDir) // cwd should be task directory if runDeterminTask() is ok
 	files, err := ioutil.ReadDir(sampleDir)
 	if err != nil {
 		return writeError("Cannot read sample dir: %s", err)
@@ -96,9 +96,9 @@ func runTest(cmd *cobra.Command, args []string) int {
 
 	// generate command string from template
 	cenv := commandEnv{
-		ScriptFile: filepath.Base(config.SkeletonFile()),
+		Script: task.Contest.Script,
 	}
-	tmpl, err := template.New("command").Parse(config.Command())
+	tmpl, err := template.New("command").Parse(task.Contest.Command)
 	if err != nil {
 		return writeError("Command template is not parsable: %s", err)
 	}
@@ -148,6 +148,7 @@ func execTestWithJudge(ctx context.Context, command, infile, outfile string) err
 	}
 	expected := string(expectedBytes)
 
+	// TODO: This doesn't work on Windows
 	cmd := exec.CommandContext(ctx, "sh", "-c", command)
 	cmd.Stdin = in
 	bytes, err := cmd.CombinedOutput()

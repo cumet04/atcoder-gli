@@ -3,10 +3,21 @@ AtCoder-GLI
 Go implementation of [AtCoder](https://atcoder.jp/) command line tools.
 This is inspired by [atcoder-cli](https://github.com/Tatamo/atcoder-cli).
 
-### TODO
-* config document
-
 ### Usage
+
+#### firststep
+```
+Launch a wizard for acg's initial setup for first user.
+Through the wizard, you can login to atcoder in acg and setup config with descriptions.
+
+Same function is available 'acg login' and 'acg config wizard'.
+
+Usage:
+  acg firststep [flags]
+
+Flags:
+  -h, --help   help for firststep
+```
 
 #### login
 ```
@@ -21,11 +32,6 @@ Usage:
 
 Flags:
   -h, --help   help for login
-
-Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### new
@@ -33,30 +39,30 @@ Global Flags:
 Create new directory for CONTEST_ID and setup directories/files.
 Fetch contest info from AtCoder website and download sample test cases for tasks.
 
-For instance, create directory tree is:
-abc100/
-- .contest.json
-+ a/
-  - main.go // if skeleton_file is set in config
-  + samples/
-    - sample_1.in
-    - sample_1.out
-    - sample_2.in
-    - sample_2.out
-+ b/ ...
-+ c/ ...
-...
-
 Usage:
   acg new CONTEST_ID [flags]
 
-Flags:
-  -h, --help   help for new
+Examples:
+  For instance, created directory tree is:
+  abc100/
+  - .contest.json
+  + a/
+    - main.go // if template is set in config
+    + tests/
+      - sample_1.in
+      - sample_1.out
+      - sample_2.in
+      - sample_2.out
+  + b/ ...
+  + c/ ...
+  ...
 
-Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+Flags:
+      --command string      command template for local test in 'acg test' (default "./{{.Script}}")
+  -h, --help                help for new
+      --language string     language ID specified with code submission
+      --sample_dir string   directory name where sample in/out files are stored in (default "tests")
+      --template string     template file name that is copied to task directory in 'acg new'
 ```
 
 #### config
@@ -72,64 +78,71 @@ Usage:
   acg config [command]
 
 Available Commands:
-  lang        Select preferred language for submit
+  doc         Show config description with default values
+  wizard      Making config wizard
 
 Flags:
   -h, --help   help for config
 
-Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
-
 Use "acg config [command] --help" for more information about a command.
 ```
 
-#### config lang
+#### config doc
 ```
-Search and select preferred language.
-Selected language is saved in config and used when submit code.
-
-You can search language with keyword (prompted) and choose one from them.
-Search targets are all available languages in AtCoder,
-and keyword is case-insensitive.
+Show config description with default values
 
 Usage:
-  acg config lang [flags]
+  acg config doc [flags]
 
 Flags:
-  -h, --help   help for lang
+  -h, --help   help for doc
+```
 
-Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
+#### config wizard
+```
+Launch wizard for making config file, and interactively setup config parameters.
+
+Usage:
+  acg config wizard [flags]
+
+Flags:
+  -h, --help   help for wizard
+```
+
+#### lang
+```
+List atcoder's available languages for submit.
+You can also filter languages with keyword (see 'filter' flag).
+
+Usage:
+  acg lang [flags]
+
+Flags:
+  -f, --filter string   filter keyword for list (case-insensitive)
+  -h, --help            help for lang
+      --no-header       Don't print header
 ```
 
 #### submit
 ```
-Submit a FILE as answer for a task, and wait the judge is complete.
-If FILE is omitted, it looks for a file named config's skeleton_file name, in current directory.
-Target task is guessed from directory where FILE is in.
+Submit a file as answer for a task, and wait the judge is complete.
+Target file is determined by looking for a file named config's template name, in current directory.
+Target task is guessed from current directory.
 Language is read from config value: 'language'.
 
-ex 1. FILE = abc100/c/main.go
--> submit abc100/c/main.go for abc100's c task
-
-ex 2. FILE is none, run in abc100/b, skeleton_file = main.rb
--> submit abc100/b/main.rb for abc100's b task
-
 Usage:
-  acg submit [FILE] [flags]
+  acg submit [flags]
+
+Aliases:
+  submit, s
+
+Examples:
+  ex 1. run in abc100/b, template = main.rb
+  -> submit abc100/b/main.rb for abc100's b task
 
 Flags:
   -h, --help     help for submit
       --nowait   exit without waiting for judge complete
-
-Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### session
@@ -144,11 +157,6 @@ Usage:
 
 Flags:
   -h, --help   help for session
-
-Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### open
@@ -163,11 +171,6 @@ Usage:
 
 Flags:
   -h, --help   help for open
-
-Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```
 
 #### show
@@ -185,9 +188,4 @@ Usage:
 
 Flags:
   -h, --help   help for show
-
-Global Flags:
-      --language string        language id used as submit code's language
-      --sample_dir string      directory name where sample in/out files are stored in (default "samples")
-      --skeleton_file string   skeleton file name that is copied to task directory in 'acg new'
 ```

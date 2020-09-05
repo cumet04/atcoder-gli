@@ -12,13 +12,16 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
-	config         Config
 	session        string
 	packageVersion string
 	packageCommit  string
+	config         = Config{
+		viper: viper.New(),
+	}
 
 	rootCmd = &cobra.Command{
 		Use:     "acg",
@@ -69,7 +72,11 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	config = *NewConfig(configDir(), rootCmd)
+
+	config.viper.SetConfigName("config")
+	config.viper.SetConfigType("yml")
+	config.viper.AddConfigPath(configDir())
+	config.viper.ReadInConfig()
 
 	_, ok := os.LookupEnv("ATCODER_GLI_HTTP_DUMP")
 	atcoder.HTTPDump = ok
@@ -125,27 +132,24 @@ func readContestInfo(basepath string) (string, *atcoder.Contest, error) {
 	return "", nil, nil
 }
 
-func prompt(label string, mask bool) (string, error) {
-	var m rune
-	if mask {
-		m = '*'
-	}
+type promptParam struct {
+	Label   string
+	Default string
+	Mask    rune
+}
+
+func prompt(p promptParam) string {
 	prompt := promptui.Prompt{
-		Label: label,
-		Mask:  m,
-		Validate: func(input string) error {
-			if len(input) == 0 {
-				return errors.New("Empty input")
-			}
-			return nil
-		},
+		Label:   p.Label,
+		Mask:    p.Mask,
+		Default: p.Default,
 	}
 
 	result, err := prompt.Run()
 	if err != nil {
 		panic(err)
 	}
-	return result, nil
+	return result
 }
 
 func configDir() string {

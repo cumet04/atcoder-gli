@@ -15,23 +15,22 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(
-		newCommand(&commandArgs{
-			Use:   "new CONTEST_ID",
-			Args:  cobra.MaximumNArgs(1),
-			Run:   runNew,
-			Short: "Create and setup new directory for a contest",
-			Long: `
+	cmd := newCommand(&commandArgs{
+		Use:   "new CONTEST_ID",
+		Args:  cobra.MaximumNArgs(1),
+		Run:   runNew,
+		Short: "Create and setup new directory for a contest",
+		Long: `
 Create new directory for CONTEST_ID and setup directories/files.
 Fetch contest info from AtCoder website and download sample test cases for tasks.
 			`,
-			Example: `
+		Example: `
 For instance, created directory tree is:
 abc100/
 - .contest.json
 + a/
-	- main.go // if skeleton_file is set in config
-	+ samples/
+	- main.go // if template is set in config
+	+ tests/
 		- sample_1.in
 		- sample_1.out
 		- sample_2.in
@@ -39,7 +38,18 @@ abc100/
 + b/ ...
 + c/ ...
 ...
-			`}))
+		`})
+
+	for _, param := range configDefinition() {
+		pf := cmd.PersistentFlags()
+		pf.String(
+			param["name"],
+			param["default"],
+			param["short"],
+		)
+		config.viper.BindPFlag(param["name"], pf.Lookup(param["name"]))
+	}
+	rootCmd.AddCommand(cmd)
 }
 
 func runNew(cmd *cobra.Command, args []string) int {
@@ -51,6 +61,15 @@ func runNew(cmd *cobra.Command, args []string) int {
 	if err != nil {
 		return writeError("Failed to fetch contest info: %s", err)
 	}
+	contest.SampleDir = config.SampleDir()
+	contest.Language = config.Language()
+	contest.Command = config.Command()
+	tmpl, err := config.TemplateFilePath()
+	if err != nil {
+		return writeError("%s", err)
+	}
+	contest.Script = filepath.Base(tmpl)
+
 	contestDir := contest.ID
 	if _, err := os.Stat(contestDir); err == nil {
 		fmt.Printf("Contest directory, %s, is already exists. abort.\n", contestDir)
@@ -68,19 +87,12 @@ func runNew(cmd *cobra.Command, args []string) int {
 			return writeError("Failed to create sample directory: %s", err)
 		}
 		t.Directory = taskDir
-		t.SampleDir = config.SampleDir()
 
-		skel, err := config.SkeletonFilePath()
-		if err != nil {
-			return writeError("%s", err)
-		}
-		if skel != "" {
-			filename := filepath.Base(skel)
-			err := copyFile(skel, filepath.Join(taskPath, filename))
+		if tmpl != "" {
+			err := copyFile(tmpl, filepath.Join(taskPath, contest.Script))
 			if err != nil {
-				return writeError("Failed to copy skeleton file: %s\n", err)
+				return writeError("Failed to copy template file: %s\n", err)
 			}
-			t.Script = filename
 		}
 
 		samples, err := ac.FetchSampleInout(t.Contest.ID, t.ID)

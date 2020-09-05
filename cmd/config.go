@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -40,21 +41,56 @@ type Config struct {
 	viper *viper.Viper
 }
 
+var configFilePath = filepath.Join(configDir(), "config.yml")
+
 func configDefinition() []map[string]string {
 	yml := `
-- name: sample_dir
-  default: tests
-  usage: directory name where sample in/out files are stored in
-- name: skeleton_file
-  default: ""
-  usage: skeleton file name that is copied to task directory in 'acg new'
 - name: language
-  default: ""
-  usage: language id used as submit code's language
+	default: ""
+	short: language ID specified with code submission
+	long: |
+		Language ID specified with code submission.
+		Selectable languages are in AtCoder's submission page, and this parameter's value is a language's (AtCoder internal) ID.
+		Characters after a space included in a value are ignored, so you can leave a memo such as language name.
+	long_ja: |
+		コード提出時に指定する言語種別のID。
+		言語はAtCoderの提出ページにて選択できるもので、このパラメータの値には言語に紐付いた（AtCoder内部の）IDを指定する。
+		値に含まれるスペース以降の文字は無視されるため、言語名などをメモとして残すことができる。
+		'acg wizard'や'acg firststep'では'{ID} {言語名}'のフォーマットで設定される。
+- name: template
+	default: ""
+	short: template file name that is copied to task directory in 'acg new'
+	long: |
+		A template file path that is copied and located at each task directory in contest directory set.
+		This accepts relative path from the config file or acg command's working directory.
+	long_ja: |
+		'acg new'でコンテスト関連ディレクトリを作成する際、各問題ディレクトリに配置されるソースコードのテンプレートファイルのパス。
+		設定ファイルもしくはコマンドの実行ディレクトリからの相対パスで記述する。
 - name: command
-  default: "./{{.ScriptFile}}"
-  usage: "command template that runs in 'acg test'"
+	default: "./{{.Script}}"
+	short: command template for local test in 'acg test'
+	long: |
+		Command template for local test in 'acg test'.
+		See 'acg test --help' for detail behaviour.
+		Available template value are below:
+		- {{.Script}} : filename of 'template' config value without directory path
+	long_ja: |
+		'acg test'でローカルテストを実行するためのコマンドのテンプレート。
+		動作の詳細は'acg test --help'を参照。
+		テンプレート内で利用可能な値は以下:
+		- {{.Script}} : 'template'設定のうち、ディレクトリを除いたファイル名の部分
+- name: sample_dir
+	default: tests
+	short: directory name where sample in/out files are stored in
+	long: |
+		Directory name where sample in/out files are stored in.
+		'acg new' creates directory with the name in each task directory, and sample in/out files are created in the directory.
+	long_ja: |
+		問題のサンプル入出力ファイルが配置されるディレクトリ名。
+		'acg new'にて、問題ディレクトリの下にこの名前でディレクトリが作成され、そのディレクトリ内にサンプル入出力ファイルが作成される。
 `
+	// TODO: implement for 'long_ja'
+	yml = strings.ReplaceAll(yml, "\t", "  ")
 	var m []map[string]string
 	if err := yaml.Unmarshal([]byte(yml), &m); err != nil {
 		panic(err)
@@ -62,39 +98,20 @@ func configDefinition() []map[string]string {
 	return m
 }
 
-// NewConfig creates a config instance with cobra params
-func NewConfig(path string, cmd *cobra.Command) *Config {
-	v := viper.New()
-	v.SetConfigName("config")
-	v.SetConfigType("yml")
-	v.AddConfigPath(path)
-	for _, param := range configDefinition() {
-		pf := rootCmd.PersistentFlags()
-		pf.String(
-			param["name"],
-			param["default"],
-			param["usage"],
-		)
-		v.BindPFlag(param["name"], pf.Lookup(param["name"]))
-	}
-	v.ReadInConfig()
-
-	return &Config{viper: v}
-}
-
 // SampleDir returns current sample_dir value of config
 func (c *Config) SampleDir() string {
 	return c.viper.GetString("sample_dir")
 }
 
-// SkeletonFile returns current skeleton_file value of config
-func (c *Config) SkeletonFile() string {
-	return c.viper.GetString("skeleton_file")
+// Template returns current template value of config
+func (c *Config) Template() string {
+	return c.viper.GetString("template")
 }
 
-// Language returns current language value of config
+// Language returns current language value (ID) of config
 func (c *Config) Language() string {
-	return c.viper.GetString("language")
+	raw := c.viper.GetString("language")
+	return strings.Split(raw, " ")[0]
 }
 
 // Command returns command value of config
@@ -102,24 +119,19 @@ func (c *Config) Command() string {
 	return c.viper.GetString("command")
 }
 
-// WriteLanguage set id to language, and save it to file
-func (c *Config) WriteLanguage(langID string) error {
-	c.viper.Set("language", langID)
-	return c.SaveConfig()
-}
-
 // SaveConfig write config to default config path
 func (c *Config) SaveConfig() error {
-	if err := os.MkdirAll(configDir(), 0755); err != nil {
-		return errors.Wrapf(err, "Cannot create config directory: %s", configDir())
+	dir := filepath.Dir(configFilePath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return errors.Wrapf(err, "Cannot create config directory: %s", dir)
 	}
-	return c.viper.WriteConfigAs(filepath.Join(configDir(), "config.yml"))
+	return c.viper.WriteConfigAs(configFilePath)
 }
 
-// SkeletonFilePath resolves absolute path of skeleton file.
-// This regards SkeletonFile as relative path from CWD or config directory.
-func (c *Config) SkeletonFilePath() (string, error) {
-	skel := c.SkeletonFile()
+// TemplateFilePath resolves absolute path of template file.
+// This regards Template as relative path from CWD or config directory.
+func (c *Config) TemplateFilePath() (string, error) {
+	skel := c.Template()
 	if skel == "" {
 		return "", nil
 	}
@@ -139,7 +151,7 @@ func (c *Config) SkeletonFilePath() (string, error) {
 	}
 
 	return "", errors.New(fmt.Sprintf(
-		"skeleton_file is specified but the file is not found in %s, %s", file1, file2,
+		"template is specified but the file is not found in %s, %s", file1, file2,
 	))
 }
 

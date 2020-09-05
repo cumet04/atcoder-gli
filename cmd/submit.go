@@ -23,12 +23,12 @@ func init() {
 		Short:   "Submit file to a task",
 		Long: `
 Submit a file as answer for a task, and wait the judge is complete.
-Target file is determined by looking for a file named config's skeleton_file name, in current directory.
+Target file is determined by looking for a file named config's template name, in current directory.
 Target task is guessed from current directory.
 Language is read from config value: 'language'.
 		`,
 		Example: `
-ex 1. run in abc100/b, skeleton_file = main.rb
+ex 1. run in abc100/b, template = main.rb
 -> submit abc100/b/main.rb for abc100's b task
 		`})
 	cmd.Flags().Bool("nowait", false, "exit without waiting for judge complete")
@@ -41,13 +41,13 @@ func runSubmit(cmd *cobra.Command, args []string) int {
 		return ret
 	}
 
-	lang := config.Language()
+	lang := task.Contest.Language
 	if lang == "" {
 		return writeError("Default language is not set.\n" +
 			"Retry this after set it with `config lang` command.")
 	}
 
-	path := filepath.Join(cwd(), task.Script)
+	path := filepath.Join(cwd(), task.Contest.Script)
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return writeError("Failed to read script file: %s", err)
