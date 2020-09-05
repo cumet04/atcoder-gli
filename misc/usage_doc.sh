@@ -7,9 +7,11 @@ go build -o $EXEC acg/main.go
 
 echo "### Usage"
 for cmd in \
+  firststep \
   login \
   new \
   config \
+  "config doc" \
   "config wizard" \
   lang \
   submit \

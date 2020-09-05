@@ -3,10 +3,20 @@ AtCoder-GLI
 Go implementation of [AtCoder](https://atcoder.jp/) command line tools.
 This is inspired by [atcoder-cli](https://github.com/Tatamo/atcoder-cli).
 
-### TODO
-* config document
-
 ### Usage
+
+#### firststep
+```
+Launch a wizard for acg's initial setup for first user.
+			Through the wizard, you can login to atcoder in acg and setup config with descriptions.
+			Same function is available 'acg login' and 'acg config wizard'.
+
+Usage:
+  acg firststep [flags]
+
+Flags:
+  -h, --help   help for firststep
+```
 
 #### login
 ```
@@ -37,7 +47,7 @@ Examples:
   - .contest.json
   + a/
     - main.go // if template is set in config
-    + samples/
+    + tests/
       - sample_1.in
       - sample_1.out
       - sample_2.in
@@ -47,9 +57,9 @@ Examples:
   ...
 
 Flags:
-      --command string      command template that runs in 'acg test' (default "./{{.Script}}")
+      --command string      command template for local test in 'acg test' (default "./{{.Script}}")
   -h, --help                help for new
-      --language string     language id used as submit code's language
+      --language string     language ID specified with code submission
       --sample_dir string   directory name where sample in/out files are stored in (default "tests")
       --template string     template file name that is copied to task directory in 'acg new'
 ```
@@ -67,12 +77,24 @@ Usage:
   acg config [command]
 
 Available Commands:
+  doc         Show config description with default values
   wizard      Making config wizard
 
 Flags:
   -h, --help   help for config
 
 Use "acg config [command] --help" for more information about a command.
+```
+
+#### config doc
+```
+Show config description with default values
+
+Usage:
+  acg config doc [flags]
+
+Flags:
+  -h, --help   help for doc
 ```
 
 #### config wizard

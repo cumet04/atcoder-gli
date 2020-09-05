@@ -16,6 +16,7 @@ func init() {
 		Long: `
 			Launch a wizard for acg's initial setup for first user.
 			Through the wizard, you can login to atcoder in acg and setup config with descriptions.
+			Same function is available 'acg login' and 'acg config wizard'.
 		`})
 	rootCmd.AddCommand(cmd)
 }
@@ -35,7 +36,7 @@ func runFirstStep(cmd *cobra.Command, args []string) int {
 
 	fmt.Println(aurora.Underline(aurora.Bold(
 		"2. Setup acg config. XXX")))
-	fmt.Println("Note: You can see default values / descriptions later with 'acg config default'.")
+	fmt.Println("Note: You can see default values / descriptions later with 'acg config doc'.")
 	fmt.Println("      This step is same as 'acg config wizard'.")
 	if err := execConfigWizard(ac); err != nil {
 		return writeError("%s", err)
