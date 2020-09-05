@@ -8,8 +8,9 @@ This is inspired by [atcoder-cli](https://github.com/Tatamo/atcoder-cli).
 #### firststep
 ```
 Launch a wizard for acg's initial setup for first user.
-			Through the wizard, you can login to atcoder in acg and setup config with descriptions.
-			Same function is available 'acg login' and 'acg config wizard'.
+Through the wizard, you can login to atcoder in acg and setup config with descriptions.
+
+Same function is available 'acg login' and 'acg config wizard'.
 
 Usage:
   acg firststep [flags]

@@ -15,7 +15,7 @@ func init() {
 		Run:   runWizard,
 		Short: "Making config wizard",
 		Long: `
-			Launch wizard for making config file, and interactively setup config parameters.
+Launch wizard for making config file, and interactively setup config parameters.
 		`})
 	configCmd.AddCommand(cmd)
 }

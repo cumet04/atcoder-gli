@@ -14,9 +14,10 @@ func init() {
 		Run:   runFirstStep,
 		Short: "Interactive setup for first user",
 		Long: `
-			Launch a wizard for acg's initial setup for first user.
-			Through the wizard, you can login to atcoder in acg and setup config with descriptions.
-			Same function is available 'acg login' and 'acg config wizard'.
+Launch a wizard for acg's initial setup for first user.
+Through the wizard, you can login to atcoder in acg and setup config with descriptions.
+
+Same function is available 'acg login' and 'acg config wizard'.
 		`})
 	rootCmd.AddCommand(cmd)
 }
