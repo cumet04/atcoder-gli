@@ -18,6 +18,7 @@ builds:
       - CGO_ENABLED=0
 archives:
   - wrap_in_directory: true
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 checksum:
   name_template: "checksums.txt"
 changelog:
